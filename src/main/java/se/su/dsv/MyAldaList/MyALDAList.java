@@ -5,17 +5,18 @@ import java.util.Iterator;
 
 public class MyALDAList<E> implements ALDAList<E>{
 
-    Node<E> firstNode;
-    Node<E> lastNode;
-    int size;
-    int modifications;
+    private Node<E> firstNode;
+    private Node<E> lastNode;
+    private int size;
+    private int modifications;
 
     public void add(E element){
         if(firstNode == null){
             firstNode = new Node<>(element);
+            lastNode = firstNode;
         } else {
             Node<E> newNode = new Node<>(element);
-            lastNode.setNext(newNode);
+            lastNode.shiftNext(newNode);
             lastNode = newNode;
 
         }
@@ -80,6 +81,9 @@ public class MyALDAList<E> implements ALDAList<E>{
 
     private void removeFirst(){
         Node<E> newFirstNode = firstNode.getNext();
+        if(newFirstNode == lastNode){
+            lastNode = newFirstNode;
+        }
         firstNode = newFirstNode;
         size--;
         modifications++;
@@ -109,6 +113,10 @@ public class MyALDAList<E> implements ALDAList<E>{
         return -1 != contains;
     }
 
+	public int indexOf(E element){
+        return find(element);
+    }
+
     private int find(E element){
         return find(element, false);
     }
@@ -133,13 +141,14 @@ public class MyALDAList<E> implements ALDAList<E>{
             counter++;
         }
         if(removeFoundElement){
-            remove(foundNode, previousNode);
+            if(counter == 0){
+                removeFirst();
+            } else {
+                remove(foundNode, previousNode); 
+            }
+
         }
         return counter;
-    }
-
-	public int indexOf(E element){
-        return find(element);
     }
 
 	public void clear(){
@@ -154,6 +163,28 @@ public class MyALDAList<E> implements ALDAList<E>{
     }
 
     @Override
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        
+        if(firstNode != null){
+            Node<E> node = firstNode;
+            sb.append(node.getData().toString());
+
+            node = node.getNext();
+            while(node!=null){
+
+            
+                sb.append(", " + node.getData().toString());
+                node = node.getNext();
+            }
+        }
+
+        sb.append("]");
+        return sb.toString();
+    }
+
+    @Override
     public Iterator<E> iterator() {
         return new MyIterator();
     }
@@ -161,7 +192,7 @@ public class MyALDAList<E> implements ALDAList<E>{
     private class MyIterator implements Iterator<E> {
 
         private int expectedModifications = modifications;
-        private Node<E> currentNode = firstNode;
+        private Node<E> currentNode;
         private Node<E> previousNode;
         private boolean okToRemove = false;
 
@@ -177,10 +208,16 @@ public class MyALDAList<E> implements ALDAList<E>{
             if (!hasNext()){
                 throw new java.util.NoSuchElementException();
             }
-            previousNode = currentNode;
-            currentNode = currentNode.getNext();
+
+            if(currentNode == null){
+                currentNode = firstNode;
+            } else {
+                previousNode = currentNode;
+                currentNode = currentNode.getNext();
+            }
+            
             okToRemove = true;
-            return previousNode.getData();
+            return currentNode.getData();
         }
 
         @Override
@@ -191,7 +228,7 @@ public class MyALDAList<E> implements ALDAList<E>{
             if (!okToRemove){
                 throw new IllegalStateException();
             }
-            if(previousNode == null){
+            if(previousNode == null || currentNode == firstNode){
                 removeFirst();
             } else {
                 MyALDAList.this.remove(currentNode, previousNode);
