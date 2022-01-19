@@ -19,7 +19,7 @@ public class MyALDAList<E> implements ALDAList<E>{
         if(index < 0 || index > size){
             throw new IndexOutOfBoundsException();
         } 
-        Node<E> leftNode = get(index-1, true);
+        Node<E> leftNode = getNodeByIndex(index-1);
         Node<E> rightNode = leftNode.getNext();
         Node<E> newNode = new Node<>(element);
         newNode.setNext(rightNode);
@@ -31,7 +31,7 @@ public class MyALDAList<E> implements ALDAList<E>{
         if(index < 0 || index > size){
             throw new IndexOutOfBoundsException();
         } 
-        Node<E> leftNode = get(index-1, true);
+        Node<E> leftNode = getNodeByIndex(index-1);
         Node <E> nodeToBeRemoved = leftNode.getNext();
         Node<E> rightNode = nodeToBeRemoved.getNext();
         leftNode.shiftNext(rightNode);
@@ -51,10 +51,10 @@ public class MyALDAList<E> implements ALDAList<E>{
     }
 
 	public E get(int index){
-        return get(index, true).getData();
+        return getNodeByIndex(index).getData();
     }
 
-    private Node<E> get(int index, boolean lookingForNodes){
+    private Node<E> getNodeByIndex(int index){
         if(index < 0 || index >= size()){
             throw new IndexOutOfBoundsException();
         }
