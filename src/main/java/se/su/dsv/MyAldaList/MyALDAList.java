@@ -1,23 +1,42 @@
 //Vera Sol Nygren, klny8594
 
 package se.su.dsv.MyAldaList;
+
 import java.util.Iterator;
 
-public class MyALDAList<E> implements ALDAList<E>{
+public class MyALDAList<E> implements ALDAList<E> {
 
     private Node<E> leftSentinel = new Node<>(null);
     private Node<E> rightSentinel = new Node<>(null);
+    /**
+     * Added variable lastNode even though it made the class more complicated,
+     * to prevent that add(E element) would take O(N) since it always adds elements
+     * to the end of the list. Now, you can just add a new node
+     * as the last nodes next node.
+     */
     private Node<E> lastNode;
     private int size;
+    /**
+     * Keeps track of the amount of modifications. Used together with the MyIterator
+     * inner class to
+     * prevent concurrent modification.
+     */
     private int modifications;
 
-    public MyALDAList(){
+    public MyALDAList() {
         leftSentinel.setNext(rightSentinel);
     }
 
-    public void add(E element){
+    /**
+     * O(1)
+     * 
+     * @param <E>     : Can be any type.
+     * @param element : the element added to the list. Always added to the end of
+     *                the list in this method.
+     */
+    public void add(E element) {
         Node<E> newNode = new Node<>(element);
-        if(leftSentinel.getNext()==rightSentinel){
+        if (leftSentinel.getNext() == rightSentinel) {
             leftSentinel.setNext(newNode);
         } else {
             lastNode.setNext(newNode);
@@ -29,17 +48,26 @@ public class MyALDAList<E> implements ALDAList<E>{
         modifications++;
     }
 
-	public void add(int index, E element){
-        if(index < 0 || index > size){
+    /**
+     * O(N) due to having to locate the index specified where the element is to be
+     * added. This cost occurs in the method getNodeByIndex(int index)
+     * 
+     * @param index   : index where element is to be added. Element currently at
+     *                that position and to the right of it
+     *                will be shifted one step to the right.
+     * @param element : the element that will be added.
+     */
+    public void add(int index, E element) {
+        if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException();
         }
         Node<E> newNode = new Node<>(element);
 
-        if(index == 0){
+        if (index == 0) {
             newNode.setNext(leftSentinel.getNext());
             leftSentinel.setNext(newNode);
 
-            if(newNode.getNext() == rightSentinel){
+            if (newNode.getNext() == rightSentinel) {
                 lastNode = newNode;
             }
 
@@ -48,146 +76,162 @@ public class MyALDAList<E> implements ALDAList<E>{
             return;
         }
 
-        Node<E> leftNode = getNodeByIndex(index-1);
+        Node<E> leftNode = getNodeByIndex(index - 1);
         Node<E> rightNode = leftNode.getNext();
 
         newNode.setNext(rightNode);
         leftNode.setNext(newNode);
-        if(rightNode == rightSentinel){
+        if (rightNode == rightSentinel) {
             lastNode = newNode;
         }
         size++;
         modifications++;
     }
 
-	public E remove(int index){
-        if(index < 0 || index >= size){
+    /**
+     * O(N) due to having to traverse the list in order to reach the specified
+     * index. The cost occurs by the call of the method getNodeByIndex(int index)
+     * 
+     * @param index : the index of the element to be removed. All elements to the
+     *              right of it will be shifted leftwards one step as a result.
+     *              If the list is instantiated as being a list of Integers, be
+     *              careful not
+     *              to accidently use this method to attempt to remove an element.
+     * @return returns the element that was removed from the list.
+     */
+    public E remove(int index) {
+        if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
-        } 
+        }
         Node<E> nodeToBeRemoved;
-        if(index > 0){
-            Node<E> leftNode = getNodeByIndex(index-1); 
+        if (index > 0) {
+            Node<E> leftNode = getNodeByIndex(index - 1);
             nodeToBeRemoved = leftNode.getNext();
             remove(nodeToBeRemoved, leftNode);
         } else {
             nodeToBeRemoved = leftSentinel.getNext();
-            removeFirst();
+            remove(nodeToBeRemoved, leftSentinel);
         }
 
         return nodeToBeRemoved.getData();
     }
 
-	public boolean remove(E element){
+    /**
+     * O(N)
+     * 
+     * @param element : the element that should be removed from the list. If the
+     *                list is instantiated as a list of Integers, be careful not to
+     *                use this method to attempt to remove by index.
+     * @return returns true if element was found and deleted, false if not.
+     */
+    public boolean remove(E element) {
         return find(element, true) != -1;
     }
 
-    private void remove(Node<E> current, Node<E> previous){
+    /**
+     * O(1). Helper method for removal of elements. Created to avoid iterator call
+     * to remove(E element) leading to O(N^2)
+     */
+    private void remove(Node<E> current, Node<E> previous) {
         Node<E> next = current.getNext();
         previous.setNext(next);
         modifications++;
         size--;
-        if(current == lastNode){
+        if (current == lastNode) {
             lastNode = previous;
         }
     }
 
-    private void removeFirst(){
-        leftSentinel.setNext(leftSentinel.getNext().getNext());
-        Node<E> newFirstNode = leftSentinel.getNext();
-        if(newFirstNode.getNext() == rightSentinel){
-            lastNode = newFirstNode;
-        }
-        size--;
-        modifications++;
-    }
-
-
-	public E get(int index){
+    public E get(int index) {
         return getNodeByIndex(index).getData();
     }
 
-    private Node<E> getNodeByIndex(int index){
-        if(index < 0 || index >= size()){
+    /** O(N). Returns node located at the specified index. */
+    private Node<E> getNodeByIndex(int index) {
+        if (index < 0 || index >= size()) {
             throw new IndexOutOfBoundsException();
         }
         Node<E> nodeToGet = leftSentinel.getNext();
-        for(int i = 0; i < index; i++){
+        for (int i = 0; i < index; i++) {
             nodeToGet = nodeToGet.getNext();
-            if(nodeToGet == null || nodeToGet == rightSentinel){
+            if (nodeToGet == null || nodeToGet == rightSentinel) {
                 throw new NullPointerException();
             }
         }
         return nodeToGet;
     }
 
-	public boolean contains(E element){
-        int contains = find(element);
+    /** O(N). Returns true if list contains element, false if not. */
+    public boolean contains(E element) {
+        int contains = indexOf(element);
         return -1 != contains;
     }
 
-	public int indexOf(E element){
-        return find(element);
-    }
-
-    private int find(E element){
+    /**
+     * Returns the index of E element.
+     * 
+     * @return index if found, -1 if not found
+     */
+    public int indexOf(E element) {
         return find(element, false);
     }
 
-    private int find(E element, boolean removeFoundElement){
+    /**
+     * Finds the index of E element - with the option to remove the found object.
+     * Mostly used to improve code reusability by not repeating code in remove(E
+     * element)
+     */
+    private int find(E element, boolean removeFoundElement) {
         Node<E> foundNode = leftSentinel.getNext();
 
-        if(foundNode == rightSentinel){
+        if (foundNode == rightSentinel) {
             return -1;
         }
 
-        Node<E> previousNode = foundNode;
+        Node<E> previousNode = leftSentinel;
         E foundNodeElement = foundNode.getData();
         int counter = 0;
 
-        while(foundNodeElement != element){
+        while (foundNodeElement != element) {
             previousNode = foundNode;
             foundNode = foundNode.getNext();
 
-            if(foundNode == null){
+            if (foundNode == null) {
                 return -1;
             }
-            
+
             foundNodeElement = foundNode.getData();
             counter++;
         }
-        if(removeFoundElement){
-            if(counter == 0){
-                removeFirst();
-            } else {
-                remove(foundNode, previousNode); 
-            }
-
+        if (removeFoundElement) {
+            remove(foundNode, previousNode);
         }
         return counter;
     }
 
-	public void clear(){
+    /** Fully empties the list. */
+    public void clear() {
         leftSentinel.setNext(rightSentinel);
         lastNode = null;
         size = 0;
         modifications++;
     }
 
-	public int size(){
+    public int size() {
         return size;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         Node<E> node = leftSentinel.getNext();
-        if(node != rightSentinel){
+        if (node != rightSentinel) {
 
             sb.append(node.getData().toString());
 
             node = node.getNext();
-            while(node!=rightSentinel){
+            while (node != rightSentinel) {
 
                 sb.append(", " + node.getData().toString());
                 node = node.getNext();
@@ -214,35 +258,32 @@ public class MyALDAList<E> implements ALDAList<E>{
         public boolean hasNext() {
             return currentNode.getNext() != rightSentinel;
         }
+
         @Override
         public E next() {
-            if(modifications != expectedModifications){
+            if (modifications != expectedModifications) {
                 throw new java.util.ConcurrentModificationException();
             }
-            if (!hasNext()){
+            if (!hasNext()) {
                 throw new java.util.NoSuchElementException();
             }
 
             previousNode = currentNode;
             currentNode = currentNode.getNext();
-            
+
             okToRemove = true;
             return currentNode.getData();
         }
 
         @Override
-        public void remove(){
-            if(modifications != expectedModifications){
+        public void remove() {
+            if (modifications != expectedModifications) {
                 throw new java.util.ConcurrentModificationException();
             }
-            if (!okToRemove){
+            if (!okToRemove) {
                 throw new IllegalStateException();
             }
-            if(previousNode == leftSentinel){
-                removeFirst();
-            } else {
-                MyALDAList.this.remove(currentNode, previousNode);
-            }
+            MyALDAList.this.remove(currentNode, previousNode);
 
             expectedModifications++;
             okToRemove = false;
@@ -254,25 +295,20 @@ public class MyALDAList<E> implements ALDAList<E>{
         private E data;
         private Node<E> nextNode;
 
-        public Node(E data){
+        public Node(E data) {
             this.data = data;
         }
 
-        public Node<E> getNext(){
+        public Node<E> getNext() {
             return nextNode;
-            
+
         }
 
-        public E getData(){
-
+        public E getData() {
             return data;
         }
 
-        public void setNext(Node<E> node){
-            nextNode = node;
-        }
-
-        public void shiftNext(Node<E> node){
+        public void setNext(Node<E> node) {
             nextNode = node;
         }
     }
