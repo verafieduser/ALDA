@@ -16,30 +16,56 @@ public class MyALDAList<E> implements ALDAList<E>{
     }
 
 	public void add(int index, E element){
-
+        if(index < 0 || index > size){
+            throw new IndexOutOfBoundsException();
+        } 
+        Node<E> leftNode = get(index-1, true);
+        Node<E> rightNode = leftNode.getNext();
+        Node<E> newNode = new Node<>(element);
+        newNode.setNext(rightNode);
+        leftNode.shiftNext(newNode);
+        size++;
     }
 
 	public E remove(int index){
-        return null;
+        if(index < 0 || index > size){
+            throw new IndexOutOfBoundsException();
+        } 
+        Node<E> leftNode = get(index-1, true);
+        Node <E> nodeToBeRemoved = leftNode.getNext();
+        Node<E> rightNode = nodeToBeRemoved.getNext();
+        leftNode.shiftNext(rightNode);
+        return nodeToBeRemoved.getData();
+
     }
 
 	public boolean remove(E element){
-        return false;
+        int index = find(element);
+        if(index == -1){
+            return false;
+        }
+
+        remove(index);
+        return true;
 
     }
 
 	public E get(int index){
-        if(node == null){
-            return null;
+        return get(index, true).getData();
+    }
+
+    private Node<E> get(int index, boolean lookingForNodes){
+        if(index < 0 || index >= size()){
+            throw new IndexOutOfBoundsException();
         }
         Node<E> nodeToGet = node;
         for(int i = 0; i < index; i++){
             nodeToGet = nodeToGet.getNext();
             if(nodeToGet == null){
-                return null;
+                throw new NullPointerException();
             }
         }
-        return nodeToGet.getData();
+        return nodeToGet;
     }
 
 	public boolean contains(E element){
@@ -73,7 +99,7 @@ public class MyALDAList<E> implements ALDAList<E>{
     }
 
 	public int size(){
-        return -1;
+        return size;
     }
 
     @Override
@@ -107,6 +133,10 @@ public class MyALDAList<E> implements ALDAList<E>{
             } else {
                 nextNode.setNext(node);
             }
+        }
+
+        public void shiftNext(Node<E> node){
+            nextNode = node;
         }
     }
 }
