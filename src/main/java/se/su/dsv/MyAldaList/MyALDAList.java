@@ -5,21 +5,26 @@ import java.util.Iterator;
 
 public class MyALDAList<E> implements ALDAList<E>{
 
-    private Node<E> firstNode;
+    private Node<E> leftSentinel = new Node<>(null);
+    private Node<E> rightSentinel = new Node<>(null);
     private Node<E> lastNode;
     private int size;
     private int modifications;
 
-    public void add(E element){
-        if(firstNode == null){
-            firstNode = new Node<>(element);
-            lastNode = firstNode;
-        } else {
-            Node<E> newNode = new Node<>(element);
-            lastNode.shiftNext(newNode);
-            lastNode = newNode;
+    public MyALDAList(){
+        leftSentinel.setNext(rightSentinel);
+    }
 
+    public void add(E element){
+        Node<E> newNode = new Node<>(element);
+        if(leftSentinel.getNext()==rightSentinel){
+            leftSentinel.setNext(newNode);
+        } else {
+            lastNode.setNext(newNode);
         }
+        newNode.setNext(rightSentinel);
+        lastNode = newNode;
+
         size++;
         modifications++;
     }
@@ -27,10 +32,17 @@ public class MyALDAList<E> implements ALDAList<E>{
 	public void add(int index, E element){
         if(index < 0 || index > size){
             throw new IndexOutOfBoundsException();
-        } else if(index == 0){
-            Node<E> newNode = new Node<>(element);
-            newNode.setNext(firstNode);
-            firstNode = newNode;
+        }
+        Node<E> newNode = new Node<>(element);
+
+        if(index == 0){
+            newNode.setNext(leftSentinel.getNext());
+            leftSentinel.setNext(newNode);
+
+            if(newNode.getNext() == rightSentinel){
+                lastNode = newNode;
+            }
+
             size++;
             modifications++;
             return;
@@ -38,10 +50,10 @@ public class MyALDAList<E> implements ALDAList<E>{
 
         Node<E> leftNode = getNodeByIndex(index-1);
         Node<E> rightNode = leftNode.getNext();
-        Node<E> newNode = new Node<>(element);
+
         newNode.setNext(rightNode);
-        leftNode.shiftNext(newNode);
-        if(rightNode == null){
+        leftNode.setNext(newNode);
+        if(rightNode == rightSentinel){
             lastNode = newNode;
         }
         size++;
@@ -53,12 +65,12 @@ public class MyALDAList<E> implements ALDAList<E>{
             throw new IndexOutOfBoundsException();
         } 
         Node<E> nodeToBeRemoved;
-        if(index > 1){
+        if(index > 0){
             Node<E> leftNode = getNodeByIndex(index-1); 
             nodeToBeRemoved = leftNode.getNext();
             remove(nodeToBeRemoved, leftNode);
         } else {
-            nodeToBeRemoved = firstNode;
+            nodeToBeRemoved = leftSentinel.getNext();
             removeFirst();
         }
 
@@ -71,7 +83,7 @@ public class MyALDAList<E> implements ALDAList<E>{
 
     private void remove(Node<E> current, Node<E> previous){
         Node<E> next = current.getNext();
-        previous.shiftNext(next);
+        previous.setNext(next);
         modifications++;
         size--;
         if(current == lastNode){
@@ -80,11 +92,11 @@ public class MyALDAList<E> implements ALDAList<E>{
     }
 
     private void removeFirst(){
-        Node<E> newFirstNode = firstNode.getNext();
-        if(newFirstNode == lastNode){
+        leftSentinel.setNext(leftSentinel.getNext().getNext());
+        Node<E> newFirstNode = leftSentinel.getNext();
+        if(newFirstNode.getNext() == rightSentinel){
             lastNode = newFirstNode;
         }
-        firstNode = newFirstNode;
         size--;
         modifications++;
     }
@@ -98,10 +110,10 @@ public class MyALDAList<E> implements ALDAList<E>{
         if(index < 0 || index >= size()){
             throw new IndexOutOfBoundsException();
         }
-        Node<E> nodeToGet = firstNode;
+        Node<E> nodeToGet = leftSentinel.getNext();
         for(int i = 0; i < index; i++){
             nodeToGet = nodeToGet.getNext();
-            if(nodeToGet == null){
+            if(nodeToGet == null || nodeToGet == rightSentinel){
                 throw new NullPointerException();
             }
         }
@@ -122,13 +134,16 @@ public class MyALDAList<E> implements ALDAList<E>{
     }
 
     private int find(E element, boolean removeFoundElement){
-        if(firstNode == null){
+        Node<E> foundNode = leftSentinel.getNext();
+
+        if(foundNode == rightSentinel){
             return -1;
         }
-        Node<E> foundNode = firstNode;
-        Node<E> previousNode = firstNode;
-        E foundNodeElement = firstNode.getData();
+
+        Node<E> previousNode = foundNode;
+        E foundNodeElement = foundNode.getData();
         int counter = 0;
+
         while(foundNodeElement != element){
             previousNode = foundNode;
             foundNode = foundNode.getNext();
@@ -152,7 +167,7 @@ public class MyALDAList<E> implements ALDAList<E>{
     }
 
 	public void clear(){
-        firstNode = null;
+        leftSentinel.setNext(rightSentinel);
         lastNode = null;
         size = 0;
         modifications++;
@@ -166,15 +181,14 @@ public class MyALDAList<E> implements ALDAList<E>{
     public String toString(){
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        
-        if(firstNode != null){
-            Node<E> node = firstNode;
+        Node<E> node = leftSentinel.getNext();
+        if(node != rightSentinel){
+
             sb.append(node.getData().toString());
 
             node = node.getNext();
-            while(node!=null){
+            while(node!=rightSentinel){
 
-            
                 sb.append(", " + node.getData().toString());
                 node = node.getNext();
             }
@@ -192,13 +206,13 @@ public class MyALDAList<E> implements ALDAList<E>{
     private class MyIterator implements Iterator<E> {
 
         private int expectedModifications = modifications;
-        private Node<E> currentNode;
+        private Node<E> currentNode = leftSentinel;
         private Node<E> previousNode;
         private boolean okToRemove = false;
 
         @Override
         public boolean hasNext() {
-            return currentNode != lastNode;
+            return currentNode.getNext() != rightSentinel;
         }
         @Override
         public E next() {
@@ -209,12 +223,8 @@ public class MyALDAList<E> implements ALDAList<E>{
                 throw new java.util.NoSuchElementException();
             }
 
-            if(currentNode == null){
-                currentNode = firstNode;
-            } else {
-                previousNode = currentNode;
-                currentNode = currentNode.getNext();
-            }
+            previousNode = currentNode;
+            currentNode = currentNode.getNext();
             
             okToRemove = true;
             return currentNode.getData();
@@ -228,7 +238,7 @@ public class MyALDAList<E> implements ALDAList<E>{
             if (!okToRemove){
                 throw new IllegalStateException();
             }
-            if(previousNode == null || currentNode == firstNode){
+            if(previousNode == leftSentinel){
                 removeFirst();
             } else {
                 MyALDAList.this.remove(currentNode, previousNode);
@@ -259,11 +269,7 @@ public class MyALDAList<E> implements ALDAList<E>{
         }
 
         public void setNext(Node<E> node){
-            if(nextNode == null){
-                nextNode = node;
-            } else {
-                nextNode.setNext(node);
-            }
+            nextNode = node;
         }
 
         public void shiftNext(Node<E> node){
