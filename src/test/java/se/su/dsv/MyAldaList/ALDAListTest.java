@@ -85,6 +85,13 @@ public class ALDAListTest {
 	}
 
 	@Test
+	public void moreTestEmpty() {
+		list = createNewList();
+		assertFalse(list.contains("he"));
+		assertEquals(-1, list.indexOf("he"));
+	}
+
+	@Test
 	public void testEmpty() {
 		// Since setUp enters a number of items into the list
 		list = createNewList();

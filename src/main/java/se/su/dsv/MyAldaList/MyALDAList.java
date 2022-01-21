@@ -137,9 +137,18 @@ public class MyALDAList<E> implements ALDAList<E> {
         previous.setNext(next);
         modifications++;
         size--;
+
+        //if the one to be removed is the last node in the list, make the previous node the lastNode.
         if (current == lastNode) {
             lastNode = previous;
-        }
+
+            //if there are no nodes left, then make the lastNode null.
+            if(lastNode == leftSentinel){
+                lastNode = null;
+            }
+            
+        } 
+
     }
 
     public E get(int index) {
@@ -182,6 +191,7 @@ public class MyALDAList<E> implements ALDAList<E> {
      * element)
      */
     private int find(E element, boolean removeFoundElement) {
+        
         Node<E> foundNode = leftSentinel.getNext();
 
         if (foundNode == rightSentinel) {
