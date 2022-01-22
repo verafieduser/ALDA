@@ -132,14 +132,14 @@ public class MyALDAList<E> implements ALDAList<E> {
      * O(1). Helper method for removal of elements. Created to avoid iterator call
      * to remove(E element) leading to O(N^2)
      */
-    private void remove(Node<E> current, Node<E> previous) {
-        Node<E> next = current.getNext();
+    private void remove(Node<E> toBeRemoved, Node<E> previous) {
+        Node<E> next = toBeRemoved.getNext();
         previous.setNext(next);
         modifications++;
         size--;
 
         //if the one to be removed is the last node in the list, make the previous node the lastNode.
-        if (current == lastNode) {
+        if (toBeRemoved == lastNode) {
             lastNode = previous;
 
             //if there are no nodes left, then make the lastNode null.
@@ -262,7 +262,7 @@ public class MyALDAList<E> implements ALDAList<E> {
         private int expectedModifications = modifications;
         private Node<E> currentNode = leftSentinel;
         private Node<E> previousNode;
-        private boolean okToRemove = false;
+        private boolean okToRemove;
 
         @Override
         public boolean hasNext() {
