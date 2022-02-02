@@ -1,8 +1,8 @@
 package se.su.dsv.MyAldaList;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
+/** 
+ * Vera Nygren
+ * klny8594
+ */
 
 /**
  * 
@@ -46,13 +46,15 @@ public class BinarySearchTreeNode<T extends Comparable<T>> {
 		if (data == null) {
 			return false;
 		}
-		if (this.data.compareTo(data) < 0) {
+
+		int compareValue = this.data.compareTo(data);
+		if (compareValue < 0) {
 			if (left == null) {
 				left = new BinarySearchTreeNode<>(data);
 				return true;
 			}
 			return left.add(data);
-		} else if (this.data.compareTo(data) > 0) {
+		} else if (compareValue > 0) {
 			if (right == null) {
 				right = new BinarySearchTreeNode<>(data);
 				return true;
@@ -74,34 +76,40 @@ public class BinarySearchTreeNode<T extends Comparable<T>> {
 	}
 
 	public BinarySearchTreeNode<T> remove(T data) {
+		if (data == null) {
+			return this;
+		}
+
 		if (this.data.compareTo(data) == 0) {
-			if (right != null && left != null) {
-				this.data = right.findMin();
-				right = right.remove(this.data);
-				return this;
-			} else {
-				if (right != null) {
-					return right;
-				} else if (left != null) {
-					return left;
-				}
-				return null;
-			}
+			return removeInThis();
 		}
-
-		if (this.data.compareTo(data) < 0) {
-			if (left != null) {
-				left = left.remove(data);
-
-			}
-		} else {
-			if (right != null) {
-				right = right.remove(data);
-			}
-		}
-
-		return this;
+		return removeInSubTree(data);
 	}
+
+	private BinarySearchTreeNode<T> removeInThis() {
+		// solution for removal of node w/ two children:
+		if (right != null && left != null) {
+			this.data = right.findMin(); // replaces current node with the smallest node in the right subtree
+			right = right.remove(this.data); // removes the smallest node in the right subtree
+			return this;
+		}
+		// solution for removal of node w/o no children:
+		if (right == null && left == null) {
+			return null;
+		}
+		// solution for removal of node w/ one child:
+		return (right != null) ? right : left;
+	}
+
+	private BinarySearchTreeNode<T> removeInSubTree(T data) {
+		int compareValue = this.data.compareTo(data);
+		if (compareValue < 0 && left != null) {
+			left = left.remove(data);
+		} else if (compareValue > 0 && right != null) {
+			right = right.remove(data);
+		}
+		return this;
+	} 
 
 	public boolean contains(T data) {
 		if (this.data.compareTo(data) == 0) {
