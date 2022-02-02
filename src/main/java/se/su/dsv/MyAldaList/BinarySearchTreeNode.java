@@ -48,13 +48,13 @@ public class BinarySearchTreeNode<T extends Comparable<T>> {
 		}
 		int compareValue = this.data.compareTo(data);
 		
-		if (compareValue < 0) {
+		if (compareValue > 0) {
 			if (left == null) {
 				left = new BinarySearchTreeNode<>(data);
 				return true;
 			}
 			return left.add(data);
-		} else if (compareValue > 0) {
+		} else if (compareValue < 0) {
 			if (right == null) {
 				right = new BinarySearchTreeNode<>(data);
 				return true;
@@ -105,9 +105,9 @@ public class BinarySearchTreeNode<T extends Comparable<T>> {
 
 	private BinarySearchTreeNode<T> removeInSubTree(T data) {
 		int compareValue = this.data.compareTo(data);
-		if (compareValue < 0 && left != null) {
+		if (compareValue > 0 && left != null) {
 			left = left.remove(data);
-		} else if (compareValue > 0 && right != null) {
+		} else if (compareValue < 0 && right != null) {
 			right = right.remove(data);
 		}
 		return this;
@@ -118,7 +118,7 @@ public class BinarySearchTreeNode<T extends Comparable<T>> {
 			return true;
 		}
 
-		if (this.data.compareTo(data) < 0) {
+		if (this.data.compareTo(data) > 0) {
 			if (left != null) {
 				return left.contains(data);
 			}
@@ -160,14 +160,14 @@ public class BinarySearchTreeNode<T extends Comparable<T>> {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 
-		if (right != null) {
-			sb.append(right.toString() + ", ");
+		if (left != null) {
+			sb.append(left.toString() + ", ");
 		}
 
 		sb.append(data);
 
-		if (left != null) {
-			sb.append(", " + left.toString());
+		if (right != null) {
+			sb.append(", " + right.toString());
 		}
 
 		return sb.toString();
