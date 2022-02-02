@@ -3,6 +3,7 @@
 package se.su.dsv.MyAldaList;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 
 public class MyALDAList<E> implements ALDAList<E> {
 
@@ -48,6 +49,14 @@ public class MyALDAList<E> implements ALDAList<E> {
         modifications++;
     }
 
+    private void ordoExample(){
+        String str = "";
+        int n = 0;
+
+
+
+    }
+
     /**
      * O(N) due to having to locate the index specified where the element is to be
      * added. This cost occurs in the method getNodeByIndex(int index)
@@ -86,6 +95,8 @@ public class MyALDAList<E> implements ALDAList<E> {
         }
         size++;
         modifications++;
+
+
     }
 
     /**
