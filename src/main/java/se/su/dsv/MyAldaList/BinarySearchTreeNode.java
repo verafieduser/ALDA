@@ -1,5 +1,9 @@
 package se.su.dsv.MyAldaList;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+
 /**
  * 
  * Detta är den enda av de tre klasserna ni ska göra några ändringar i. (Om ni
@@ -39,7 +43,7 @@ public class BinarySearchTreeNode<T extends Comparable<T>> {
 	}
 
 	public boolean add(T data) {
-		if(data==null){
+		if (data == null) {
 			return false;
 		}
 		if (this.data.compareTo(data) < 0) {
@@ -58,17 +62,9 @@ public class BinarySearchTreeNode<T extends Comparable<T>> {
 		return false;
 	}
 
-	private void add(BinarySearchTreeNode<T> node){
-		if(right!=null){
-			right.add(node);
-		} else {
-			right = node;
-		}	
-	}
-
 	private T findMin() {
 		T min;
-		if(left!=null){
+		if (left != null) {
 			min = left.findMin();
 		} else {
 			min = data;
@@ -79,25 +75,28 @@ public class BinarySearchTreeNode<T extends Comparable<T>> {
 
 	public BinarySearchTreeNode<T> remove(T data) {
 		if (this.data.compareTo(data) == 0) {
-			if(left==null){
-				return right;
-			} else if(right==null){
-				return left;
+			if (right != null && left != null) {
+				this.data = right.findMin();
+				right = right.remove(this.data);
+				return this;
 			} else {
-				left.add(right);
-				return left;
+				if (right != null) {
+					return right;
+				} else if (left != null) {
+					return left;
+				}
+				return null;
 			}
 		}
 
-
 		if (this.data.compareTo(data) < 0) {
-			if(left!=null){
-				left=left.remove(data);
-				
-			} 
+			if (left != null) {
+				left = left.remove(data);
+
+			}
 		} else {
-			if(right!=null){
-				right=right.remove(data);
+			if (right != null) {
+				right = right.remove(data);
 			}
 		}
 
@@ -161,7 +160,6 @@ public class BinarySearchTreeNode<T extends Comparable<T>> {
 			sb.append(", " + left.toString());
 		}
 
-		// sb.deleteCharAt(sb.length()-1)??
 		return sb.toString();
 	}
 }
