@@ -42,6 +42,7 @@ public class BinarySearchTreeTester {
 	@Test
 	public void testAddUnique() {
 		for (int n = 1; n <= 6; n++) {
+			System.out.println(n);
 			assertTrue(tree.contains(n));
 		}
 	}
@@ -136,5 +137,4 @@ public class BinarySearchTreeTester {
 		stringTree.remove("C");
 		assertFalse(stringTree.contains("C"));
 	}
-
 }

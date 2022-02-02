@@ -5,7 +5,8 @@ package se.su.dsv.MyAldaList;
  * Detta är den enda av de tre klasserna ni ska göra några ändringar i. (Om ni
  * inte vill lägga till fler testfall.) Det är också den enda av klasserna ni
  * ska lämna in. Glöm inte att namn och användarnamn ska stå i en kommentar
- * högst upp, och att en eventuell paketdeklarationen måste plockas bort vid inlämningen för
+ * högst upp, och att en eventuell paketdeklarationen måste plockas bort vid
+ * inlämningen för
  * att koden ska gå igenom de automatiska testerna.
  * 
  * De ändringar som är tillåtna är begränsade av följande:
@@ -38,59 +39,129 @@ public class BinarySearchTreeNode<T extends Comparable<T>> {
 	}
 
 	public boolean add(T data) {
+		if(data==null){
+			return false;
+		}
+		if (this.data.compareTo(data) < 0) {
+			if (left == null) {
+				left = new BinarySearchTreeNode<>(data);
+				return true;
+			}
+			return left.add(data);
+		} else if (this.data.compareTo(data) > 0) {
+			if (right == null) {
+				right = new BinarySearchTreeNode<>(data);
+				return true;
+			}
+			return right.add(data);
+		}
 		return false;
+	}
+
+	private void add(BinarySearchTreeNode<T> node){
+		if(right!=null){
+			right.add(node);
+		} else {
+			right = node;
+		}	
 	}
 
 	private T findMin() {
-		return null;
+		T min;
+		if(left!=null){
+			min = left.findMin();
+		} else {
+			min = data;
+		}
+		return min;
+
 	}
 
 	public BinarySearchTreeNode<T> remove(T data) {
+		if (this.data.compareTo(data) == 0) {
+			if(left==null){
+				return right;
+			} else if(right==null){
+				return left;
+			} else {
+				left.add(right);
+				return left;
+			}
+		}
 
-		return null;
+
+		if (this.data.compareTo(data) < 0) {
+			if(left!=null){
+				left=left.remove(data);
+				
+			} 
+		} else {
+			if(right!=null){
+				right=right.remove(data);
+			}
+		}
+
+		return this;
 	}
 
 	public boolean contains(T data) {
-		if(this.data.compareTo(data)==0){
+		if (this.data.compareTo(data) == 0) {
 			return true;
-		} 
+		}
 
-		if(this.data.compareTo(data)<0){
-			if(left!=null){
+		if (this.data.compareTo(data) < 0) {
+			if (left != null) {
 				return left.contains(data);
 			}
 		} else {
-			if(right!=null){
+			if (right != null) {
 				return right.contains(data);
 			}
 		}
-		
+
 		return false;
-		//return this.data.compareTo(data)<0 ? left.contains(data) : right.contains(data);
-		// if(this.data.compareTo(data)<0){
-		// 	return left.contains(data);
-		// } else {
-		// 	return right.contains(data);
-		// }
 	}
 
 	public int size() {
-		int size = 1; 
-		if(left!=null){
+		int size = 1;
+		if (left != null) {
 			size += left.size();
-		} 
-		if(right!=null){
-			size += right.size();		
+		}
+		if (right != null) {
+			size += right.size();
 		}
 
 		return size;
 	}
 
 	public int depth() {
-		return -1;
+		int leftDepth = 0;
+		int rightDepth = 0;
+		if (left != null) {
+			leftDepth++;
+			leftDepth += left.depth();
+		}
+		if (right != null) {
+			rightDepth++;
+			rightDepth += right.depth();
+		}
+		return rightDepth < leftDepth ? leftDepth : rightDepth;
 	}
 
 	public String toString() {
-		return "";
+		StringBuilder sb = new StringBuilder();
+
+		if (right != null) {
+			sb.append(right.toString() + ", ");
+		}
+
+		sb.append(data);
+
+		if (left != null) {
+			sb.append(", " + left.toString());
+		}
+
+		// sb.deleteCharAt(sb.length()-1)??
+		return sb.toString();
 	}
 }
