@@ -46,8 +46,8 @@ public class BinarySearchTreeNode<T extends Comparable<T>> {
 		if (data == null) {
 			return false;
 		}
-
 		int compareValue = this.data.compareTo(data);
+		
 		if (compareValue < 0) {
 			if (left == null) {
 				left = new BinarySearchTreeNode<>(data);
@@ -82,8 +82,10 @@ public class BinarySearchTreeNode<T extends Comparable<T>> {
 
 		if (this.data.compareTo(data) == 0) {
 			return removeInThis();
+		} else {
+			return removeInSubTree(data);		
 		}
-		return removeInSubTree(data);
+
 	}
 
 	private BinarySearchTreeNode<T> removeInThis() {
