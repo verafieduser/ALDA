@@ -53,4 +53,27 @@ public class Book {
 				content.length());
 	}
 
+	@Override
+	public boolean equals(Object o){
+		if(o instanceof Book){
+			Book book = (Book) o;
+			if(isbn.equals(book.isbn)){
+				return true;
+			}
+		} 
+		return false;
+	}
+
+
+	@Override
+	/**
+	 *  Valde att använda ISBN eftersom det är en unik 
+	 *  identifierar av böcker redan - som skiljer olika upplagor åt.
+	 * Jag valde även att överlagra MyStrings hashCode istället för
+	 * ISBN direkt, då jag känner att det leder till fler möjligheter
+	 * att återanvända kod.
+	 */
+	public int hashCode(){
+		return (new MyString(isbn.toString())).hashCode();
+	}
 }
