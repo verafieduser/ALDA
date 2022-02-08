@@ -1,4 +1,4 @@
-package se.su.dsv.MyAldaList;
+package se.su.dsv.MyAldaList.Complete;
 
 /**
  * Denna klass representerar ett binärt sökträd. Ni får inte ändra *NÅGOT* i

@@ -1,6 +1,6 @@
 //Vera Sol Nygren, klny8594
 
-package se.su.dsv.MyAldaList;
+package se.su.dsv.MyAldaList.Complete;
 
 import java.util.Iterator;
 import java.util.LinkedList;

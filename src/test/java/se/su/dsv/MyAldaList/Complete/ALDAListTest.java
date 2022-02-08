@@ -1,4 +1,4 @@
-package se.su.dsv.MyAldaList;
+package se.su.dsv.MyAldaList.Complete;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.*;
 
-import se.su.dsv.MyAldaList.ALDAList;
 
 /**
  * This class contains JUnit test cases that you can use to test your

@@ -1,4 +1,4 @@
-package se.su.dsv.MyAldaList;
+package se.su.dsv.MyAldaList.Complete;
 /** 
  * Vera Nygren
  * klny8594
