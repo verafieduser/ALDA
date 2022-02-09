@@ -38,7 +38,7 @@ public class DHeap<AnyType extends Comparable<? super AnyType>> {
      * @param childrenPerNode how many children each node is permitted.
      */
     public DHeap(int childrenPerNode) {
-        if(childrenPerNode<2){
+        if (childrenPerNode < 2) {
             throw new IllegalArgumentException();
         }
         currentSize = 0;
@@ -50,7 +50,7 @@ public class DHeap<AnyType extends Comparable<? super AnyType>> {
      * Construct the binary heap given an array of items.
      */
     public DHeap(AnyType[] items, int childrenPerNode) {
-        if(childrenPerNode<2){
+        if (childrenPerNode < 2) {
             throw new IllegalArgumentException();
         }
         currentSize = items.length;
@@ -69,14 +69,60 @@ public class DHeap<AnyType extends Comparable<? super AnyType>> {
      * @param x the item to insert.
      */
     public void insert(AnyType x) {
-        if (currentSize == array.length - 1)
-            enlargeArray(array.length * childrenPerNode + 1);
+        if (currentSize == array.length - 1){
+            enlargeArray(array.length * childrenPerNode + 1);            
+        }
+
+        boolean keepPercolating = true;
 
         // Percolate up
-        int hole = ++currentSize;
-        for (array[0] = x; x.compareTo(array[hole / childrenPerNode]) < 0; hole /= childrenPerNode)
-            array[hole] = array[hole / childrenPerNode];
-        array[hole] = x;
+        int index = ++currentSize;
+
+        while (keepPercolating) {
+            int parent;
+            if (index == 1) {
+                break;
+            } 
+
+            if(index > 1){
+                if(index>childrenPerNode+1){
+                    parent = parentIndex(index);
+                    if(x.compareTo(array[parent])<0){
+                        array[index] = array[parent];
+                        index = parent;
+                    } else {
+                        keepPercolating = false;
+                    }
+                } else {
+                    if(x.compareTo(array[1])<0){
+                        array[index] = array[1];
+                        index = 1;
+
+                    }
+                    keepPercolating = false;
+                }
+
+            }
+
+        }
+
+        // int parent = parentIndex(index);
+        // while (parent > 0) {
+        //     if (array[index].compareTo(array[parent]) < 0) {
+        //         array[index] = array[parentIndex(index)];
+        //         index = parent;
+        //         parent = parentIndex(index);
+        //     } else {
+        //         index = 0;
+        //         parent = 0;
+        //     }
+        // }
+        array[index] = x;
+        // for (array[0] = x; x.compareTo(array[parentIndex(index)]) < 0; index =
+        // parentIndex(index)){
+
+        // }
+
     }
 
     private void enlargeArray(int newSize) {
@@ -152,10 +198,10 @@ public class DHeap<AnyType extends Comparable<? super AnyType>> {
         int child;
         AnyType tmp = array[hole];
 
-        for (; hole * childrenPerNode <= currentSize; hole = child) {
-            child = hole * childrenPerNode;
-            if (child != currentSize &&
-                    array[child + 1].compareTo(array[child]) < 0)
+        for (; firstChildIndex(hole) <= currentSize; hole = child) {
+            child = firstChildIndex(hole);
+
+            if (child != currentSize && array[child + 1].compareTo(array[child]) < 0)
                 child++;
             if (array[child].compareTo(tmp) < 0)
                 array[hole] = array[child];
@@ -178,28 +224,26 @@ public class DHeap<AnyType extends Comparable<? super AnyType>> {
                 System.out.println("Oops! " + i);
     }
 
-    public int parentIndex(int nodeIndex){
-        if(nodeIndex<2){
-            throw new IllegalArgumentException();
+    public int parentIndex(int nodeIndex) {
+        if (nodeIndex < 3) {
+            throw new IllegalArgumentException("Node index was: " + nodeIndex);
         }
-        int parentIndex = nodeIndex/childrenPerNode;
-
-        return parentIndex;
+        return (nodeIndex - 2) / childrenPerNode + 1;
     }
 
-    public int firstChildIndex(int node){
-        if(node==0){
-            throw new IllegalArgumentException();
+    public int firstChildIndex(int nodeIndex) {
+        if (nodeIndex == 0) {
+            throw new IllegalArgumentException("Node index was: " + nodeIndex);
         }
 
-        return 0;
+        return childrenPerNode * nodeIndex + 2 - childrenPerNode;
     }
 
-    public int size(){
+    public int size() {
         return currentSize;
     }
 
-    AnyType get(int index){
+    AnyType get(int index) {
         return array[index];
     }
 }
