@@ -182,15 +182,13 @@ public class DHeap<AnyType extends Comparable<? super AnyType>> {
         for (; firstChildIndex(hole) <= currentSize; hole = child) {
             child = firstChildIndex(hole);
             int smallestChild = child;
-            for(int i = 1; child!=currentSize && i<childrenPerNode-1;i++){
+            for(int i = 1; child+i<=currentSize && i<childrenPerNode;i++){
                 if(array[child + i].compareTo(array[smallestChild]) < 0){
                     smallestChild=child+i;
                 } 
             }
             child = smallestChild;
 
-            // if (child != currentSize && array[child + 1].compareTo(array[child]) < 0)
-            //     child++;
             if (array[child].compareTo(tmp) < 0)
                 array[hole] = array[child];
             else
@@ -234,4 +232,27 @@ public class DHeap<AnyType extends Comparable<? super AnyType>> {
     AnyType get(int index) {
         return array[index];
     }
+public String printHeap () {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for(AnyType element : array) {
+            sb.append(element);
+            sb.append(", ");
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for(AnyType element : array) {
+            sb.append(element);
+            sb.append(", ");
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
 }
