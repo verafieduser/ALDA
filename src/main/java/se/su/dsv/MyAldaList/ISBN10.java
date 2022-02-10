@@ -22,6 +22,8 @@ public class ISBN10 {
 		return isbn.endsWith(checkDigit == 10 ? "X" : "" + checkDigit);
 	}
 
+	
+
 	@Override
 	public String toString() {
 		return new String(isbn);

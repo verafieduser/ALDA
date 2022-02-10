@@ -1,5 +1,7 @@
 package se.su.dsv.MyAldaList;
 
+import java.util.Arrays;
+
 public class MyString {
 
 	private char[] data;
@@ -27,6 +29,19 @@ public class MyString {
 		return Integer.parseInt(sb.toString());
 	}	
 	
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == this)
+			return true;
+		if (!(o instanceof MyString)) {
+			return false;
+		}
+		MyString myString = (MyString) o;
+		return Arrays.equals(data, myString.data);
+	}
+	
+
 	@Override
 	public String toString() {
 		return new String(data);

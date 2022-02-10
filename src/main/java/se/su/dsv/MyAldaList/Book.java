@@ -53,15 +53,27 @@ public class Book {
 				content.length());
 	}
 
+	// @Override
+	// public boolean equals(Object o){
+	// 	if(o instanceof Book){
+	// 		Book book = (Book) o;
+	// 		if(isbn.equals(book.isbn)){
+	// 			return true;
+	// 		}
+	// 	} 
+	// 	return false;
+	// }
+
+
 	@Override
-	public boolean equals(Object o){
-		if(o instanceof Book){
-			Book book = (Book) o;
-			if(isbn.equals(book.isbn)){
-				return true;
-			}
-		} 
-		return false;
+	public boolean equals(Object o) {
+		if (o == this)
+			return true;
+		if (!(o instanceof Book)) {
+			return false;
+		}
+		Book book = (Book) o;
+		return (new MyString(isbn.toString()).equals(new MyString(book.isbn.toString())));
 	}
 
 
