@@ -10,12 +10,27 @@ public class Line{
     private Set<SL_Stop> stops = new HashSet<>();
     private List<SL_Trip> trips = new LinkedList<>();
 
-
-
     public Line(SL_Route route) {
         this.route = route;
     }
 
+    public boolean contains(SL_Stop stop){
+        for(SL_Stop s : stops){
+            if(stop.equals(s)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean contains(SL_Trip trip){
+        for(SL_Trip t : trips){
+            if(trip.equals(t)){
+                return true;
+            }
+        }
+        return false;
+    }
 
     public boolean addStop(SL_Stop stop){
         return stops.add(stop);

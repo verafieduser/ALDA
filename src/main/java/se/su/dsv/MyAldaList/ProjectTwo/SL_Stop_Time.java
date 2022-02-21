@@ -1,22 +1,22 @@
 package se.su.dsv.MyAldaList.ProjectTwo;
 
-public class SL_Stop_Time{
-    private long trip_id;
+public class SL_Stop_Time implements Comparable<SL_Stop_Time>{
+    private SL_Trip trip;
     private String departure_time;
-    private int stop_id;
+    private SL_Stop stop;
     private short stop_sequence;
 
 
-    public SL_Stop_Time(long trip_id, String departure_time, int stop_id, short stop_sequence) {
-        this.trip_id = trip_id;
+    public SL_Stop_Time(SL_Trip trip, String departure_time, SL_Stop stop, short stop_sequence) {
+        this.trip = trip;
         this.departure_time = departure_time;
-        this.stop_id = stop_id;
+        this.stop = stop;
         this.stop_sequence = stop_sequence;
     }
 
 
-    public long getTrip_id() {
-        return this.trip_id;
+    public SL_Trip getTrip() {
+        return this.trip;
     }
 
 
@@ -24,23 +24,33 @@ public class SL_Stop_Time{
         return this.departure_time;
     }
 
-    public int getStop_id() {
-        return this.stop_id;
+    public SL_Stop getStop() {
+        return this.stop;
     }
 
     public short getStop_sequence() {
         return this.stop_sequence;
     }
 
+    @Override
+    public int compareTo(SL_Stop_Time o) {
+        Short own = stop_sequence;
+        Short other = o.getStop_sequence();
+        return own.compareTo(other);
+    }
 
     @Override
     public String toString() {
-        return "{" +
-            "\t trip_id='" + getTrip_id() + "'" +
+        return "\nSL_STOP_TIME: {" +
+            "\n\t trip='" + getTrip() + "'" +
             ",\n\t departure_time='" + getDeparture_time() + "'" +
-            ",\n\t stop_id='" + getStop_id() + "'" +
+            ",\n\t stop='" + getStop() + "'" +
             ",\n\t stop_sequence='" + getStop_sequence() + "'" +
-            "}\n\t";
+            "}";
     }
+
+
+
+
 
 }

@@ -34,10 +34,10 @@ public class SL_Stop{
 
     @Override
     public String toString() {
-        return "{" +
+        return "\nSL_STOP: {" +
             "\n\t stop_id='" + getStop_id() + "'" +
             ",\n\t stop_name='" + getStop_name() + "'" +
-            "}\n";
+            "}";
     }
 
 

@@ -3,24 +3,64 @@ package se.su.dsv.MyAldaList.ProjectTwo;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public class SLlight {
-    LinkedList<Line> lines = new LinkedList<>();
-    LinkedList<SL_Stop> stops = new LinkedList<>();
-    LinkedList<SL_Stop_Time> stopTimes = new LinkedList<>();
-    LinkedList<SL_Route> routes = new LinkedList<>();
-    LinkedList<SL_Trip> trips = new LinkedList<>();
+    List<Line> lines = new LinkedList<>();
+    List<SL_Stop> stops = new ArrayList<>();
+    List<SL_Stop_Time> stopTimes = new ArrayList<>();
+    List<SL_Route> routes = new LinkedList<>();
+    List<SL_Trip> trips = new LinkedList<>();
 
     public static void main(String[] args) {
         SLlight sl = new SLlight();
-        sl.importCSV("sl_stops");
-        sl.importCSV("sl_stop_times");
-        sl.importCSV("sl_routes");
-        sl.importCSV("sl_trips");
-        sl.dataIntoGraph();
+        sl.initialize();
+
     }
 
+    public void initialize(){
+        long startTimeOne = System.currentTimeMillis();
+        importCSV("sl_routes");
+        long endTimeOne = System.currentTimeMillis();
+        long timeOne = endTimeOne-startTimeOne;
+        System.out.println("Import of Routes took: " + timeOne);
+
+        long startTimeTwo = System.currentTimeMillis();
+        importCSV("sl_stops");
+        long endTimeTwo = System.currentTimeMillis();
+        long timeTwo = endTimeTwo-startTimeTwo;
+        System.out.println("Import of Stops took: " + timeTwo);
+
+        long startTimeThree = System.currentTimeMillis();
+        importCSV("sl_trips"); 
+        long endTimeThree = System.currentTimeMillis();
+        long timeThree = endTimeThree-startTimeThree;
+        System.out.println("Import of Trips took: " + timeThree);
+
+        long startTimeFour = System.currentTimeMillis();
+        importCSV("sl_stop_times");
+        long endTimeFour = System.currentTimeMillis();
+        long timeFour = endTimeFour-startTimeFour;
+        System.out.println("Import of Stop Times took: " + timeFour);
+
+        long startTimeFive = System.currentTimeMillis();
+        addTripsToRoutes();
+        long endTimeFive = System.currentTimeMillis();
+        long timeFive = endTimeFive-startTimeFive;
+        System.out.println("Linking of Trips to routes took: " + timeFive);
+
+        System.out.println("Total Import took: " + (timeOne+timeTwo+timeThree+timeFour+timeFive));
+    }
+
+    public void graphify(){
+        //create node class
+        //create edges along trips, and add them to nodes. determine cost by time? use departure time to determine if path is
+        //traversable!
+    }
+    
+    public void 
 
     /**
      * Imports one of for possible CSV files (sl_stops, sl_stop_times, sl_routes, or sl_trips.)
@@ -63,45 +103,64 @@ public class SLlight {
     }
 
     public void dataIntoGraph(){
-        //en lista på alla linjer, varje linje har stops.
-        SL_Route currentRoute = null;
-        Line currentLine = null;
 
-        //adds all lines:
-        for(SL_Trip trip : trips){
-            if(currentRoute == null || currentRoute.getRoute_id() != trip.getRoute_id()){
-                for(SL_Route route : routes){
-                    if(route.getRoute_id()==trip.getRoute_id()){
-                        currentRoute = route;
-                        currentLine = new Line(currentRoute);
-                        lines.add(currentLine);
-                    }
-                }
-            }
-            //do stuff...
-            currentLine.addTrip(trip);
-        }
 
-        System.out.println("Added all trips to each line!");
 
-        for(Line line : lines){
-            for(SL_Trip trip : line.getTrips()){
+
+        // //en lista på alla linjer, varje linje har stops.
+        // SL_Route currentRoute = null;
+        // Line currentLine = null;
+
+        // //create all lines:
+        // for(SL_Trip trip : trips){
+        //     if(currentRoute == null || currentRoute.getRoute_id() != trip.getRoute_id()){
+        //         for(SL_Route route : routes){
+        //             if(route.getRoute_id()==trip.getRoute_id()){
+        //                 currentRoute = route;
+        //                 currentLine = new Line(currentRoute);
+        //                 lines.add(currentLine);
+        //                 break; //break to make sure that loop doesn't keep iterating once it is done
+        //             }
+        //         }
+        //     }
+        //     //do stuff...
+        //     currentLine.addTrip(trip);
+        // }
+
+        // System.out.println("Added all trips to each line!");
+
+        // for(Line line : lines){
+        //     for(SL_Trip trip : line.getTrips()){
                 
-                for(SL_Stop_Time stopTime : stopTimes){
-                    if(stopTime.getTrip_id()==trip.getTrip_id()){
+        //         for(int i = 0; i<stopTimes.size();i++){
 
-                        for(SL_Stop stop : stops){
-                            if(stop.getStop_id()==stopTime.getStop_id()){
-                                line.addStop(stop);
-                            }
-                        }
-                    }    
-                }
-            }
-        }
-        System.out.println("Added all stops to each line");
+        //             if(stopTimes.get(i).getTrip_id()==trip.getTrip_id()){
+        //                 for(int j = 0; j<stops.size();j++){
+        //                     boolean foundEm =stops.get(j).getStop_id()==stopTimes.get(i).getStop_id();
+        //                     // int stopStopId = stops.get(j).getStop_id();
+        //                     // int timeStopId = stopTimes.get(i).getStop_id();
+        //                     while(foundEm){
+        //                         foundEm = true;
+        //                         line.addStop(stops.get(j));
+        //                         j++;
+        //                         if(j==stops.size() || stops.get(j).getStop_id()!=stopTimes.get(i).getStop_id()){
+        //                             break; 
+        //                         }
 
-        System.out.println(lines);
+        //                     }
+        //                     if(foundEm){
+        //                         break; //to make sure iteration stops once all in a row have been found. 
+        //                         //This works bc data is presorted.
+        //                     }
+        //                 }
+
+        //             }    
+        //         }
+        //     }
+        // }
+        // System.out.println("Added all stops to each line");
+
+        // System.out.println(lines);
     }
 
     private void addStop(String[] lines) {
@@ -121,17 +180,49 @@ public class SLlight {
     }
 
     private void addTrip(String[] lines) {
-        Long route_id = Long.parseLong(lines[0]);
+        Long routeId = Long.parseLong(lines[0]);
+        SL_Route line = null;
+        for(SL_Route route : routes){
+            if(route.getRoute_id()==routeId){
+                line=route;
+            }
+        }
+
         Long trip_id = Long.parseLong(lines[2]);
         String trip_headsign = lines[3];
-        trips.add(new SL_Trip(route_id, trip_id, trip_headsign));
+        trips.add(new SL_Trip(line, trip_id, trip_headsign)); //add dependency!!!
     }
 
     private void addStopTime(String[] lines) {
-        Long trip_id = Long.parseLong(lines[0]);
-        String departure_time = lines[2];
-        int stop_id = Integer.parseInt(lines[3]);
+        String departureTime = lines[2];
+        int stopId = Integer.parseInt(lines[3]);
+        SL_Stop location = null;
+        for(SL_Stop stop : stops){
+            if(stop.getStop_id()==stopId){
+                location = stop;
+            }
+        }
         short stop_sequence = Short.parseShort(lines[4]);
-        stopTimes.add(new SL_Stop_Time(trip_id, departure_time, stop_id, stop_sequence));
+
+        Long tripId = Long.parseLong(lines[0]);
+        SL_Trip tripStop = null;
+        for(SL_Trip trip : trips){
+            if(trip.getTrip_id()==tripId){
+                tripStop = trip;
+                SL_Stop_Time stopTime = new SL_Stop_Time(tripStop, departureTime, location, stop_sequence);
+                trip.addStopTime(stopTime);
+                stopTimes.add(stopTime);
+            }
+        }
+    }
+
+    public void addTripsToRoutes(){
+        for(SL_Route route : routes){
+            for(SL_Trip trip : trips){
+                if(trip.getRoute().equals(route)){
+                    route.addTrip(trip);
+                }
+            }
+        }
     }
 }
