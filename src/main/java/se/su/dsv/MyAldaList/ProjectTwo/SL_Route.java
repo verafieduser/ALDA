@@ -9,6 +9,9 @@ public class SL_Route{
     private short route_type;
     private List<SL_Trip> trips = new LinkedList<>();
 
+    public List<SL_Trip> getTrips() {
+        return this.trips;
+    }
 
     public SL_Route(long route_id, short route_short_name, short route_type) {
         this.route_id = route_id;

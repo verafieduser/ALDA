@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Comparator;
 import java.util.LinkedList;
 
-public class SL_Trip{
+public class SL_Trip {
     private SL_Route route;
     /**
      * Unique identifier for trip:
@@ -13,10 +13,30 @@ public class SL_Trip{
     /**
      * Terminal station name:
      */
-    private String trip_headsign; 
+    private String trip_headsign;
 
-    private List<SL_Stop_Time> stopTimes = new LinkedList<>(); 
+    private List<SL_Stop_Time> stopTimes = new LinkedList<>();
     private List<SL_Stop> stops = new LinkedList<>();
+
+    public void setRoute(SL_Route route) {
+        this.route = route;
+    }
+
+    public void setTrip_id(long trip_id) {
+        this.trip_id = trip_id;
+    }
+
+    public void setTrip_headsign(String trip_headsign) {
+        this.trip_headsign = trip_headsign;
+    }
+
+    public List<SL_Stop_Time> getStopTimes() {
+        return this.stopTimes;
+    }
+
+    public List<SL_Stop> getStops() {
+        return this.stops;
+    }
 
     public SL_Trip(SL_Route route, long trip_id, String trip_headsign) {
         this.route = route;
@@ -24,7 +44,7 @@ public class SL_Trip{
         this.trip_headsign = trip_headsign;
     }
 
-    public boolean addStopTime(SL_Stop_Time stopTime){
+    public boolean addStopTime(SL_Stop_Time stopTime) {
         stops.add(stopTime.getStop());
         boolean returnValue = stopTimes.add(stopTime);
         return returnValue;
@@ -42,14 +62,13 @@ public class SL_Trip{
         return this.trip_headsign;
     }
 
-
     @Override
     public String toString() {
         return "\nSL_TRIP: {" +
-            "\n\t route='" + getRoute() + "'" +
-            ",\n\t trip_id='" + getTrip_id() + "'" +
-            ",\n\t trip_headsign='" + getTrip_headsign() + "'" +
-            "}";
+                "\n\t route='" + getRoute() + "'" +
+                ",\n\t trip_id='" + getTrip_id() + "'" +
+                ",\n\t trip_headsign='" + getTrip_headsign() + "'" +
+                "}";
     }
 
 }

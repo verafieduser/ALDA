@@ -1,8 +1,12 @@
 package se.su.dsv.MyAldaList.ProjectTwo;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class SL_Stop{
     private int stop_id;
     private String stop_name;
+    List<SL_Route> connections = new LinkedList<>();
     // private Double stop_lat;
     // private Double stop_lon;
 
@@ -14,6 +18,13 @@ public class SL_Stop{
         // this.stop_lon = stop_lon;
     }
 
+    public boolean addConnection(SL_Route connection){
+        return connections.add(connection);
+    }
+    
+    public Map<SL_Stop_Time, > findEdgesAtTime(String time){
+
+    }
 
     public int getStop_id() {
         return this.stop_id;
