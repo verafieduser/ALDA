@@ -38,12 +38,13 @@ class ClosestPointsTest {
 
 	@Test
 	void testAll(){
-		for(int i = 0; i < 1000; i++){
-			test(10);
-			test(20);
-			test(50);
-			test(100);
-			largeScaleTimeTest();
+		for(int i = 0; i < 5; i++){
+            long startTimeOne = System.currentTimeMillis();
+			test(1000);
+
+			long endTimeOne = System.currentTimeMillis();
+			long timeOne = endTimeOne - startTimeOne;
+			System.out.println("Step " + i + " took: " + timeOne);
 		}
 	}
 
