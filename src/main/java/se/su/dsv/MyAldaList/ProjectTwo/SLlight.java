@@ -52,7 +52,7 @@ public class SLlight {
             System.out.println("Linking of Trips to Routes took: " + timeFive);
 
             long startTimeSix = System.currentTimeMillis();
-        addRoutesToStops();
+        addTripsToStops();
             long endTimeSix = System.currentTimeMillis();
             long timeSix = endTimeSix - startTimeSix;
             System.out.println("Linking of Routes to Stops took: " + timeSix);
@@ -244,14 +244,11 @@ public class SLlight {
         }
     }
 
-    public void addRoutesToStops() {
+    public void addTripsToStops() {
         for (SL_Stop stop : stops) {
-            for (SL_Route route : routes) {
-                List<SL_Trip> routeTrips = route.getTrips();
-                for (SL_Trip trip : routeTrips) {
-                    if (trip.getStops().contains(stop)) {
-                        stop.addConnection(route);
-                    }
+            for (SL_Trip trip : trips) {
+                if (trip.getStops().contains(stop)) {
+                    stop.addConnection(trip);
                 }
             }
         }

@@ -18,16 +18,8 @@ public class SL_Trip {
     private List<SL_Stop_Time> stopTimes = new LinkedList<>();
     private List<SL_Stop> stops = new LinkedList<>();
 
-    public void setRoute(SL_Route route) {
-        this.route = route;
-    }
-
-    public void setTrip_id(long trip_id) {
-        this.trip_id = trip_id;
-    }
-
-    public void setTrip_headsign(String trip_headsign) {
-        this.trip_headsign = trip_headsign;
+    public SL_Stop_Time getNextStops(SL_Stop currentStop, short[] departureTime){
+        return null;
     }
 
     public List<SL_Stop_Time> getStopTimes() {
