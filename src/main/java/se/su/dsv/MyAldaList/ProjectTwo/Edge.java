@@ -35,4 +35,17 @@ public class Edge{
         return travelTime;
     }
 
+
+    @Override
+    public String toString() {
+        return "{" +
+            " from='" + getFrom() + "'" +
+            ", \nto='" + getTo() + "'" +
+            ", departureTime='" + getDepartureTime() + "'" +
+            ", arrivalTime='" + getArrivalTime() + "'" +
+            ", travelTime='" + getTravelTime() + "'" +
+            "}";
+    }
+
+
 }

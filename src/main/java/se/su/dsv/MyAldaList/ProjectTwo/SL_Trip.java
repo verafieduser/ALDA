@@ -48,7 +48,7 @@ public class SL_Trip {
             return null;
         }
 
-        to = stopTimes.get(currentStopSeq+1);
+        to = stopTimes.get(currentStopSeq);
         return new Edge(from, to);
     }
 

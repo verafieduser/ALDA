@@ -63,6 +63,7 @@ public class Time implements Comparable<Time> {
             travelCost[0] += 24;          
         }
 
+        //TODO: implement general solution:
         if(travelCost[1] < (short)0){
             if(travelCost[0] > (short)0){
                 travelCost[0] -= 1;

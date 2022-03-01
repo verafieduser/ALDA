@@ -7,6 +7,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+//TODO: Djikstras baserat på avgångstid
+//TODO: A* för att hitta rätt väg.
+//TODO: Implementera gångavstånd via long/lat-avstånd? 
+//TODO: Effektivisera via att kolla ifall de befinner sig på samma linje? Eller t.o.m. linjerna som går från linjen?
+//TODO: Kartkoordinater!
+//TODO: Lägg till färdmedel på edges.
+
 public class SLlight {
     List<SL_Stop> stops = new ArrayList<>();
     List<SL_Stop_Time> stopTimes = new ArrayList<>();
@@ -19,10 +26,17 @@ public class SLlight {
     }
 
     private void tests(){
-        System.out.println(trips.get(0));
-        Time time1 = new Time("23:30:00");
-        Time time2 = new Time("07:40:00");
-        System.out.println(Time.timeDifference(time1, time2));
+        // Edge[] edges=stops.get(50).edgesAtSpecificTime(new Time("16:00:00"));
+        // for(Edge edge : edges){
+        //     System.out.println(edge);
+        // }
+
+        System.out.println(stops.get(20));
+
+        // System.out.println(trips.get(0));
+        // Time time1 = new Time("23:30:00");
+        // Time time2 = new Time("07:40:00");
+        // System.out.println(Time.timeDifference(time1, time2));
     }
 
     public void initialize() {
@@ -62,11 +76,18 @@ public class SLlight {
             long timeSix = endTimeSix - startTimeSix;
             System.out.println("Linking of Routes to Stops took: " + timeSix);
 
-            System.out.println("Total Import took: " + (timeOne + timeTwo + timeThree + timeFour + timeFive + timeSix));
+            long startTimeSeven = System.currentTimeMillis();
+        addEdgesToStops();
+            long endTimeSeven = System.currentTimeMillis();
+            long timeSeven = endTimeSeven - startTimeSeven;
+            System.out.println("Adding edges to stops took: " + timeSix);
+
+            System.out.println("Total Import took: " + (timeOne + timeTwo + timeThree + timeFour + timeFive + timeSix + timeSeven));
 
         tests();
 
     }
+
 
     public void graphify() {
         for (SL_Trip trip : trips) {
@@ -190,9 +211,9 @@ public class SLlight {
     private void addStop(String[] lines) {
         int stop_id = Integer.parseInt(lines[0]);
         String stop_name = lines[1];
-        // double stop_lat = Double.parseDouble(lines[2]);
-        // double stop_lon = Double.parseDouble(lines[3]);
-        stops.add(new SL_Stop(stop_id, stop_name/* , stop_lat, stop_lon */));
+        double stop_lat = Double.parseDouble(lines[2]);
+        double stop_lon = Double.parseDouble(lines[3]);
+        stops.add(new SL_Stop(stop_id, stop_name, stop_lat, stop_lon));
     }
 
     private void addRoute(String[] lines) {
@@ -260,5 +281,12 @@ public class SLlight {
                 }
             }
         }
+    }
+
+    private void addEdgesToStops() {
+        for(SL_Stop stop : stops){
+            stop.addEdges();
+        }
+
     }
 }
