@@ -1,7 +1,7 @@
 package se.su.dsv.MyAldaList;
 
 public class Point implements Comparable<Point> {
-    private int x, y;
+    private final int x, y;
 
     public Point(int x, int y) {
         this.x = x;
