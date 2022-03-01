@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import se.su.dsv.MyAldaList.Complete.ClosestPoints;
+import se.su.dsv.MyAldaList.Complete.Point;
+
 class ClosestPointsTest {
 
 	private static final int MAX_COORD = 1000;
