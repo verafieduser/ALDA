@@ -11,7 +11,7 @@ public class ClosestPoints {
 	 */
 	public static Point[] findClosestPairOfPoints(Point[] points) {
 		Arrays.sort(points); // sorterar alla värdena efter compareTo i Point, som jämför x-värden.
-		return findClosestPair(points, 0, points.length); //den rekursiva metoden
+		return findClosestPair(points, 0, points.length-1); //den rekursiva metoden
 	}
 
 	/**
@@ -27,7 +27,7 @@ public class ClosestPoints {
 		Point[] result = null;
 		double minDistanceSoFar;
 
-		if (to - from < 10) { 	//om storleken på nuvarande iterations andel av arrayen 
+		if (to - from <= 10) { 	//om storleken på nuvarande iterations andel av arrayen 
 								//är under 10 så används "brute-force"-lösning.
 								//baserat på lite testning verkade det inte göra så stor skillnad om 
 								//den är 5, 10, 20, e.t.c. - så länge den inte blir alltför stor. 
@@ -36,12 +36,12 @@ public class ClosestPoints {
 		} else {	//annars delas nuvarande iterations andel av arrayen upp i två halvor...
 			int middle = (to + from) / 2;
 			Point[] resultLeft = findClosestPair(points, from, middle);
-			Point[] resultRight = findClosestPair(points, middle + 1, to);
+			Point[] resultRight = findClosestPair(points, middle, to);
 
 			double distanceLeft = resultLeft[0].distanceTo(resultLeft[1]);
 			double distanceRight = resultRight[0].distanceTo(resultRight[1]);
 
-			if (distanceLeft < distanceRight) {
+			if (Double.compare(distanceLeft, distanceRight) < 0) {
 				result = resultLeft;
 				minDistanceSoFar = distanceLeft;
 			} else {
@@ -51,18 +51,14 @@ public class ClosestPoints {
 
 			int[] middleCutoffs = findMiddleCutOffs(points, minDistanceSoFar, middle, from, to);
 
-			
-			if (middleCutoffs[0] >= 0 && middleCutoffs[1] >= 0) { 	//if cutoffs are 0 or below that means 
-																	//that there were no relevant middle connections
-				//I tried using brute force here instead of findClosestPair, but both took around the same amount of time
-				//given 1k iterations over the long test - went w/ closest pair because it was more aesthetically pleasing
-				Point[] resultThree = findClosestPair(points, middleCutoffs[0], middleCutoffs[1]);
-				double distanceMiddle = resultThree[0].distanceTo(resultThree[1]);
 
-				return distanceMiddle < minDistanceSoFar ? resultThree : result;
-			} else {
-				return result;
-			}
+			//I tried using brute force here instead of findClosestPair, but both took around the same amount of time
+			//given 1k iterations over the long test - went w/ closest pair because it was more aesthetically pleasing
+			Point[] resultThree = findSmallestBruteForce(points, middleCutoffs[0], middleCutoffs[1]+1);
+			double distanceMiddle = resultThree[0].distanceTo(resultThree[1]);
+
+			return Double.compare(distanceMiddle, minDistanceSoFar) < 0 ? resultThree : result;
+
 		}
 	}
 
@@ -74,15 +70,14 @@ public class ClosestPoints {
 	 * @return
 	 */
 	private static Point[] findSmallestBruteForce(Point[] points, int from, int to) {
-		Point[] result = null;
+		Point[] result = new Point[2];
 		double distance;
 		double minDistanceSoFar = Double.MAX_VALUE;
 
 		for (int i = from; i < to; i++) {
 			for (int j = i + 1; j < to; j++) {
 				distance = points[i].distanceTo(points[j]);
-				if (distance < minDistanceSoFar) {
-					result = new Point[2];
+				if (Double.compare(distance, minDistanceSoFar) < 0) {
 					result[0] = points[i];
 					result[1] = points[j];
 					minDistanceSoFar = distance;
@@ -103,23 +98,22 @@ public class ClosestPoints {
 	 */
 	private static int[] findMiddleCutOffs(Point[] points, double minDistance, int middle, int from, int to) {
 
-		int upperBound = -1; 
-		int lowerBound = -1;
-		//upper bound
+		int upperBound = to; 
+		int lowerBound = from;
+
 		for(int i = middle+1; i < to; i++){
-			if(points[i].xDistance(points[middle]) >= minDistance){
+			if(Double.compare(points[i].xDistance(points[middle]), minDistance) > 0 && points[i].getX() != points[i+1].getX()){
 				upperBound = i;
 				break;
 			}
 		}
 
 		for(int i = middle-1; i > from; i--){
-			if(points[i].xDistance(points[middle]) >= minDistance){
+			if(Double.compare(points[i].xDistance(points[middle]), minDistance) > 0 && points[i].getX() != points[i-1].getX()){
 				lowerBound = i;
 				break;
 			}
 		}
-
 		return new int[] { lowerBound, upperBound };
 	}
 

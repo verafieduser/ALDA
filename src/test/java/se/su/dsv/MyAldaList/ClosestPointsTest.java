@@ -39,38 +39,34 @@ class ClosestPointsTest {
 		return closest;
 	}
 
-	// @Test
-	// void testAll(){
-	// 	long startTest= System.currentTimeMillis();
-	// 	for(int i = 0; i < 50; i++){
-    //         long startTimeOne = System.currentTimeMillis();
-	// 		largeScaleTimeTest();
+	@Test
+	void testAll(){
+		test(83);
+		// for(int i = 50; i < 100; i++){
+		// 	System.out.println(i);
+		// 	test(i);
+		// }
+	}
 
-	// 		long endTimeOne = System.currentTimeMillis();
-	// 		long timeOne = endTimeOne - startTimeOne;
-	// 		System.out.println("Step " + i + " took: " + timeOne);
-	// 	}
-	// 	long endTime = System.currentTimeMillis();
-	// 	long time = endTime - startTest;
-	// 	System.out.println("Took: " + time);
-	// }
-
-	private Point[] randomPoints(int number) {
+	private Point[] randomPoints(int number, int rand) {
+		Random random = new Random(rand);
 		Point[] points = new Point[number];
 		for (int i = 0; i < number; i++) {
-			points[i] = new Point(RND.nextInt(MAX_COORD), RND.nextInt(MAX_COORD));
+			points[i] = new Point(random.nextInt(MAX_COORD), random.nextInt(MAX_COORD));
 		}
 		return points;
 	}
 
+
 	@ParameterizedTest
 	@ValueSource(ints = { 10, 20, 50, 100 })
 	void test(int number) {
-		Point[] points = randomPoints(number);
+		Point[] points = randomPoints(number, number);
 
 		Point[] x = ClosestPoints.findClosestPairOfPoints(points);
 		Point[] y = bruteForceSolution(points);
 
+		
 		assertEquals(y[0].distanceTo(y[1]), x[0].distanceTo(x[1]), 0.1);
 	}
 
@@ -81,7 +77,7 @@ class ClosestPointsTest {
 	 */
 	@Test
 	void largeScaleTimeTest() {
-		Point[] points = randomPoints(MAX_POINTS);
+		Point[] points = randomPoints(MAX_POINTS, 100);
 		assertTimeoutPreemptively(Duration.ofSeconds(1), () -> {
 			ClosestPoints.findClosestPairOfPoints(points);
 		});

@@ -2,7 +2,7 @@ package se.su.dsv.MyAldaList.ProjectTwo;
 
 public class SL_Stop_Time implements Comparable<SL_Stop_Time>{
     private SL_Trip trip;
-    private short[] departureTime;
+    private Time departureTime;
     private SL_Stop stop;
     private short stop_sequence;
 
@@ -11,19 +11,14 @@ public class SL_Stop_Time implements Comparable<SL_Stop_Time>{
         this.trip = trip;
         this.stop = stop;
         this.stop_sequence = stop_sequence;
-        String[] time = departure_time.split(":");
-        departureTime = new short[time.length];
-        for(int i = 0; i < time.length; i++){
-            departureTime[i] = Short.parseShort(time[i]);
-        }
+        departureTime = new Time(departure_time);
     }
-
 
     public SL_Trip getTrip() {
         return this.trip;
     }
 
-    public short[] getDepartureTime() {
+    public Time getDepartureTime() {
         return departureTime;
     }
 
@@ -46,9 +41,9 @@ public class SL_Stop_Time implements Comparable<SL_Stop_Time>{
     @Override
     public String toString() {
         return "\nSL_STOP_TIME: {" +
-            "\n\t trip='" + getTrip() + "'" +
+            "\n\t trip='" + getTrip().getTrip_headsign() + "'" +
             ",\n\t departure_time='" + getDepartureTime() + "'" +
-            ",\n\t stop='" + getStop() + "'" +
+            ",\n\t stop='" + getStop().getStop_name() + "'" +
             ",\n\t stop_sequence='" + getStop_sequence() + "'" +
             "}";
     }

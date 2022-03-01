@@ -9,16 +9,33 @@ public class Point implements Comparable<Point> {
     }
 
     public double distanceTo(Point o) {
+        double distance;
+        if(this.compareTo(o) > 0){
+            distance = Math.hypot(x-o.x, y-o.y);
+        } else {
+            distance = Math.hypot(o.x-x, o.y-y);
+        }
+
         //Pythagoras:
-        double distance = Math.sqrt(    (x - o.x) ^ 2 
-                                +       (y - o.y) ^ 2);
-        //Avrundar till 2 decimaler p.g.a. sqrt inte pålitlig:
-        return Math.round(distance * 100d) / 100d;
+        //double distance = Math.hypot(Math.max(x, o.x) - Math.min(x,o.x), Math.max(y, o.y) - Math.min(y, o.y));
+
+        
+
+        //Avrundar till 2 decimaler för att standardisera värdena:
+        return distance;//Math.round(distance * 10d) / 10d;
     }
 
     public double xDistance(Point o) {
         return Integer.max(x, o.x) - Integer.min(x, o.x);
 
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 
     public double yDistance(Point o) {

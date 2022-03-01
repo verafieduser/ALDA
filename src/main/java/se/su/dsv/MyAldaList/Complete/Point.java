@@ -10,8 +10,8 @@ public class Point implements Comparable<Point> {
 
     public double distanceTo(Point o) {
         //Pythagoras:
-        double distance = Math.sqrt(    (x - o.x) ^ 2 
-                                +       (y - o.y) ^ 2);
+        double distance = Math.sqrt((   Math.pow((double)x - o.x,2) 
+                                +       Math.pow((double)y - o.y,2)));
         //Avrundar till 2 decimaler p.g.a. sqrt inte pålitlig:
         return Math.round(distance * 100d) / 100d;
     }
@@ -23,6 +23,14 @@ public class Point implements Comparable<Point> {
 
     public double yDistance(Point o) {
         return Integer.max(y, o.y) - Integer.min(y, o.y);
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 
     @Override

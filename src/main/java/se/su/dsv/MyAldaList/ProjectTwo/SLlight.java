@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SLlight {
-    List<Line> lines = new LinkedList<>();
     List<SL_Stop> stops = new ArrayList<>();
     List<SL_Stop_Time> stopTimes = new ArrayList<>();
     List<SL_Route> routes = new LinkedList<>();
@@ -17,7 +16,13 @@ public class SLlight {
     public static void main(String[] args) {
         SLlight sl = new SLlight();
         sl.initialize();
+    }
 
+    private void tests(){
+        System.out.println(trips.get(0));
+        Time time1 = new Time("23:30:00");
+        Time time2 = new Time("07:40:00");
+        System.out.println(Time.timeDifference(time1, time2));
     }
 
     public void initialize() {
@@ -58,6 +63,9 @@ public class SLlight {
             System.out.println("Linking of Routes to Stops took: " + timeSix);
 
             System.out.println("Total Import took: " + (timeOne + timeTwo + timeThree + timeFour + timeFive + timeSix));
+
+        tests();
+
     }
 
     public void graphify() {

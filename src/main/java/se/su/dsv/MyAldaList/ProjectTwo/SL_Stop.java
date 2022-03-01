@@ -9,6 +9,7 @@ public class SL_Stop{
     private int stop_id;
     private String stop_name;
     List<SL_Trip> connections = new LinkedList<>();
+    List<Edge> edges = new LinkedList<>();
     // private Double stop_lat;
     // private Double stop_lon;
 
@@ -21,50 +22,11 @@ public class SL_Stop{
     }
 
     public boolean addConnection(SL_Trip connection){
+        Edge edge = connection.getNext(this);
+        if(edge != null){
+            edges.add(edge);
+        }
         return connections.add(connection);
-    }
-    
-    public Map<SL_Stop_Time, Integer> findEdgesAtTime(short[] departureTime){
-        HashMap<SL_Stop_Time, short[]> stopsAndCosts = new HashMap<>();
-        for(SL_Trip connection : connections){
-            SL_Stop_Time nextStop = connection.getNextStops(this, departureTime); 
-            short[] travelTime = calculateTravelCost(departureTime, nextStop);
-        }
-        return null;
-    }
-
-    private short[] calculateTravelCost(short[] departureTime, SL_Stop_Time nextStop){
-        short[] arrivalTime = nextStop.getDepartureTime();
-        short[] travelCost = new short[arrivalTime.length];
-        for(int i = 0; i<arrivalTime.length;i++){
-            travelCost[i] = (short) (arrivalTime[i] - departureTime[i]);
-        }
-
-        travelCost = checkIfTravelCostNegative(travelCost);
-        return travelCost;
-    }
-
-    private short[] checkIfTravelCostNegative(short[] travelCost){
-        for(int i = travelCost.length; i>=0; i--){
-            if(Short.compare(travelCost[i], (short)0) < 0){
-                if(i==travelCost.length){ //if it is the highest value in time, you cannot subtract from higher unit - therefore... 
-                    for(int j=0; i<travelCost.length; j++){
-                        if(j==travelCost.length-1){
-                            travelCost[j]+=60;   
-                        } else {
-                            travelCost[j]=0;
-                        }
-                    }
-                    break;
-                } else if(travelCost[i-1]>(short)0) { //if the value in the higher unit is larger than 0, you can subtract from it
-                    travelCost[i-1] -= 1;
-                    travelCost[i] += 60;
-                } else {
-                    //TODO: if value in higher unit is not larger than 0, but current is still negative? can this happen?
-                }
-            } 
-        }
-        return travelCost;
     }
 
     public int getStop_id() {
