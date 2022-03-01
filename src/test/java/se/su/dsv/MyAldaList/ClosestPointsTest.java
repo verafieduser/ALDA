@@ -39,17 +39,21 @@ class ClosestPointsTest {
 		return closest;
 	}
 
-	@Test
-	void testAll(){
-		for(int i = 0; i < 5; i++){
-            long startTimeOne = System.currentTimeMillis();
-			test(1000);
+	// @Test
+	// void testAll(){
+	// 	long startTest= System.currentTimeMillis();
+	// 	for(int i = 0; i < 50; i++){
+    //         long startTimeOne = System.currentTimeMillis();
+	// 		largeScaleTimeTest();
 
-			long endTimeOne = System.currentTimeMillis();
-			long timeOne = endTimeOne - startTimeOne;
-			System.out.println("Step " + i + " took: " + timeOne);
-		}
-	}
+	// 		long endTimeOne = System.currentTimeMillis();
+	// 		long timeOne = endTimeOne - startTimeOne;
+	// 		System.out.println("Step " + i + " took: " + timeOne);
+	// 	}
+	// 	long endTime = System.currentTimeMillis();
+	// 	long time = endTime - startTest;
+	// 	System.out.println("Took: " + time);
+	// }
 
 	private Point[] randomPoints(int number) {
 		Point[] points = new Point[number];
