@@ -4,9 +4,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SL_Route{
-    private long route_id;
-    private short route_short_name;
-    private short route_type;
+    private long id;
+    private short shortName;
+    private short type;
     private List<SL_Trip> trips = new LinkedList<>();
 
     public List<SL_Trip> getTrips() {
@@ -14,9 +14,9 @@ public class SL_Route{
     }
 
     public SL_Route(long route_id, short route_short_name, short route_type) {
-        this.route_id = route_id;
-        this.route_short_name = route_short_name;
-        this.route_type = route_type;
+        this.id = route_id;
+        this.shortName = route_short_name;
+        this.type = route_type;
     }
 
     public boolean addTrip(SL_Trip trip){
@@ -24,16 +24,16 @@ public class SL_Route{
     }
 
 
-    public long getRoute_id() {
-        return this.route_id;
+    public long getId() {
+        return this.id;
     }
 
-    public short getRoute_short_name() {
-        return this.route_short_name;
+    public short getShortName() {
+        return this.shortName;
     }
 
-    public short getRoute_type() {
-        return this.route_type;
+    public short getType() {
+        return this.type;
     }
 
 
@@ -41,9 +41,9 @@ public class SL_Route{
     @Override
     public String toString() {
         return "\nSL_ROUTE: {" +
-            "\n\t route_id='" + getRoute_id() + "'" +
-            ",\n\t route_short_name='" + getRoute_short_name() + "'" +
-            ",\n\t route_type='" + getRoute_type() + "'" +
+            "\n\t route_id='" + getId() + "'" +
+            ",\n\t route_short_name='" + getShortName() + "'" +
+            ",\n\t route_type='" + getType() + "'" +
             "}";
     }
 

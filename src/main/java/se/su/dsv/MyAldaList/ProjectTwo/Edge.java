@@ -23,6 +23,14 @@ public class Edge{
         return to;
     }
 
+    public SL_Trip getTrip(){
+        return from.getTrip();
+    }
+
+    public SL_Route getRoute(){
+        return from.getTrip().getRoute();
+    }
+
     public Time getArrivalTime() {
         return arrivalTime;
     }

@@ -228,7 +228,7 @@ public class SLlight {
         Long routeId = Long.parseLong(lines[0]);
         SL_Route line = null;
         for (SL_Route route : routes) {
-            if (route.getRoute_id() == routeId) {
+            if (route.getId() == routeId) {
                 line = route;
             }
         }
@@ -243,7 +243,7 @@ public class SLlight {
         int stopId = Integer.parseInt(lines[3]);
         SL_Stop location = null;
         for (SL_Stop stop : stops) {
-            if (stop.getStop_id() == stopId) {
+            if (stop.getId() == stopId) {
                 location = stop;
                 break;
             }

@@ -42,7 +42,7 @@ public class SL_Trip {
         if(from == null){
             return null;
         }
-        int currentStopSeq = from.getStop_sequence();
+        int currentStopSeq = from.getSequence();
 
         if(currentStopSeq >= stopTimes.size()-1){
             return null;

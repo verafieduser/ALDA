@@ -6,16 +6,16 @@ import java.util.List;
 import java.util.Map;
 
 public class SL_Stop{
-    private int stop_id;
-    private String stop_name;
+    private int id;
+    private String name;
     List<SL_Trip> connections = new LinkedList<>();
     List<Edge> edges = new LinkedList<>();
-    private double[] stop_latlon;
+    private double[] latlon;
 
     public SL_Stop(int stop_id, String stop_name, double stop_lat, double stop_lon) {
-        this.stop_id = stop_id;
-        this.stop_name = stop_name;
-        stop_latlon = new double[] {stop_lat, stop_lon};
+        this.id = stop_id;
+        this.name = stop_name;
+        latlon = new double[] {stop_lat, stop_lon};
     }
 
     public boolean addConnection(SL_Trip connection){
@@ -50,8 +50,8 @@ public class SL_Stop{
         return map.values().toArray(new Edge[map.size()]); 
     }
 
-    public int getStop_id() {
-        return this.stop_id;
+    public int getId() {
+        return this.id;
     }
 
     public List<SL_Trip> getConnections() {
@@ -62,16 +62,8 @@ public class SL_Stop{
         return edges;
     }
 
-    public void setStop_id(int stop_id) {
-        this.stop_id = stop_id;
-    }
-
-    public String getStop_name() {
-        return this.stop_name;
-    }
-
-    public void setStop_name(String stop_name) {
-        this.stop_name = stop_name;
+    public String getName() {
+        return this.name;
     }
 
     private String printRoutes(){
@@ -88,17 +80,17 @@ public class SL_Stop{
         return sb.toString();
     }
 
-    public double[] getStop_latlon() {
-        return stop_latlon;
+    public double[] getLatlon() {
+        return latlon;
     }
 
     @Override
     public String toString() {
         return "{" +
-            " \n\tstop_id='" + getStop_id() + "'" +
-            ", \n\tstop_name='" + getStop_name() + "'" +
+            " \n\tstop_id='" + id + "'" +
+            ", \n\tstop_name='" + name + "'" +
             ", \n\tconnections='" + printRoutes() + "'" +
-            ", \n\tstop_latlon='" + stop_latlon[0] +"|" + stop_latlon[1]  + "'" +
+            ", \n\tstop_latlon='" + latlon[0] +"|" + latlon[1]  + "'" +
             "}";
     }
 
