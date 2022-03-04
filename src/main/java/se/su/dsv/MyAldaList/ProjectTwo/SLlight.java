@@ -12,7 +12,22 @@ import java.util.List;
 //TODO: Implementera gångavstånd via long/lat-avstånd? 
 //TODO: Effektivisera via att kolla ifall de befinner sig på samma linje? Eller t.o.m. linjerna som går från linjen?
 //TODO: Kartkoordinater!
-//TODO: Lägg till färdmedel på edges.
+
+//TODO: bedöm vilka linjer som är vilka färdmedel. 
+//TODO: prioritera linjer som finns i targets connections. 
+
+/**
+ * Heuristic:
+ *      1: Kolla att någon av de routes i start finns i routes i end. Spara alla dom routes:
+ *          För varje sådan Route, ge den ett värde baserat på färdmedel - metro>tramway>bus
+ *              Kolla när den med högst värde går. om det är långt till avgångstid, jämför med den med näst högst värde, e.t.c.
+ *              Returnera bästa värdet du fick, och vilken väg det var
+ *                  
+ *      2: Om de inte delar någon route...: 
+ *          Ta en station i taget åt vardera håll (om bägge finns) med bästa färdmedel. Utför steg 1 på den. 
+ *          Steg 1 på nuvarande station. 
+ *      
+ */     
 
 public class SLlight {
     List<SL_Stop> stops = new ArrayList<>();
@@ -31,7 +46,7 @@ public class SLlight {
         //     System.out.println(edge);
         // }
 
-        System.out.println(stops.get(20));
+        System.out.println(stops.get(20).getEdges().get(0));
 
         // System.out.println(trips.get(0));
         // Time time1 = new Time("23:30:00");
@@ -253,7 +268,7 @@ public class SLlight {
         Long tripId = Long.parseLong(lines[0]);
         SL_Trip tripStop = null;
         for (SL_Trip trip : trips) {
-            if (trip.getTrip_id() == tripId) {
+            if (trip.getId() == tripId) {
                 tripStop = trip;
                 SL_Stop_Time stopTime = new SL_Stop_Time(tripStop, departureTime, location, stop_sequence);
                 trip.addStopTime(stopTime);
@@ -268,6 +283,9 @@ public class SLlight {
             for (SL_Trip trip : trips) {
                 if (trip.getRoute().equals(route)) {
                     route.addTrip(trip);
+                    for(SL_Stop stop : trip.getStops()){
+                        route.addStop(stop);
+                    }
                 }
             }
         }

@@ -38,10 +38,28 @@ public class SL_Stop_Time implements Comparable<SL_Stop_Time>{
         return own.compareTo(other);
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof SL_Stop_Time)) {
+            return false;
+        }
+        SL_Stop_Time other = (SL_Stop_Time) o;
+        return stop.equals(other.stop) && departureTime.equals(other.departureTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return stop.hashCode()+departureTime.hashCode();
+    }
+
+
     @Override
     public String toString() {
         return "\nSL_STOP_TIME: {" +
-            "\n\t trip='" + getTrip().getTrip_headsign() + "'" +
+            "\n\t trip='" + getTrip().getHeadsign() + "'" +
             ",\n\t departure_time='" + getDepartureTime() + "'" +
             ",\n\t stop='" + getStop().getName() + "'" +
             ",\n\t stop_sequence='" + getSequence() + "'" +

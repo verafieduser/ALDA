@@ -114,7 +114,7 @@ public class Time implements Comparable<Time> {
     @Override
     public String toString() {
         return "{" +
-            " time='" + time[0] + ":" + time[1] + ":" + time[2] + "'" +
+            "'" + time[0] + ":" + time[1] + ":" + time[2] + "'" +
             "}";
     }
 

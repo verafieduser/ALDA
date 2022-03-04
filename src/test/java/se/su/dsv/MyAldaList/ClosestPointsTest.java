@@ -10,9 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import se.su.dsv.MyAldaList.Complete.ClosestPoints;
-import se.su.dsv.MyAldaList.Complete.Point;
-
 class ClosestPointsTest {
 
 	private static final int MAX_COORD = 1000;
@@ -39,20 +36,10 @@ class ClosestPointsTest {
 		return closest;
 	}
 
-	@Test
-	void testAll(){
-		test(83);
-		// for(int i = 50; i < 100; i++){
-		// 	System.out.println(i);
-		// 	test(i);
-		// }
-	}
-
-	private Point[] randomPoints(int number, int rand) {
-		Random random = new Random(rand);
+	private Point[] randomPoints(int number) {
 		Point[] points = new Point[number];
 		for (int i = 0; i < number; i++) {
-			points[i] = new Point(random.nextInt(MAX_COORD), random.nextInt(MAX_COORD));
+			points[i] = new Point(RND.nextInt(MAX_COORD), RND.nextInt(MAX_COORD));
 		}
 		return points;
 	}
@@ -61,14 +48,46 @@ class ClosestPointsTest {
 	@ParameterizedTest
 	@ValueSource(ints = { 10, 20, 50, 100 })
 	void test(int number) {
-		Point[] points = randomPoints(number, number);
+		Point[] points = randomPoints(number);
 
 		Point[] x = ClosestPoints.findClosestPairOfPoints(points);
 		Point[] y = bruteForceSolution(points);
-
 		
+		double xDistance = x[0].distanceTo(x[1]);
+		double yDistance = y[0].distanceTo(y[1]);
+
+		if(xDistance != yDistance){
+			Point y1 =null, y2 =null;
+			int index = 0;
+			int index1 =0;
+			int index2 =0 ;
+			for(Point point : points){
+				if(y[0] == point){
+					y1=point;
+					index1 = index;
+				} else if(y[1] == point){
+					y2=point;
+					index2 = index;
+				}
+				index++;
+			}
+			System.out.println("Points: " + y1.toString() + " on index " + index1 + " and " + y2.toString() + " on index " + index2 + " length was " + points.length);
+		}
+		//System.out.println(y[0].distanceTo(y[1]));
 		assertEquals(y[0].distanceTo(y[1]), x[0].distanceTo(x[1]), 0.1);
 	}
+
+	@Test
+	void testAll() {
+		for(int i = 10; i < 10000; i++){
+			System.out.println(i);
+			test(10);
+			test(20);
+			test(50);
+			test(100);
+		}
+	}
+
 
 	/**
 	 * Detta test försöker kontrollera att implementationen är korrekt ordo-mässigt
@@ -77,8 +96,8 @@ class ClosestPointsTest {
 	 */
 	@Test
 	void largeScaleTimeTest() {
-		Point[] points = randomPoints(MAX_POINTS, 100);
-		assertTimeoutPreemptively(Duration.ofSeconds(1), () -> {
+		Point[] points = randomPoints(MAX_POINTS);
+		assertTimeoutPreemptively(Duration.ofSeconds(2), () -> {
 			ClosestPoints.findClosestPairOfPoints(points);
 		});
 	}

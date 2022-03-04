@@ -45,13 +45,32 @@ public class Edge{
 
 
     @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof Edge)) {
+            return false;
+        }
+        Edge edge = (Edge) o;
+        return from.equals(edge.from) && to.equals(edge.to);
+    }
+
+    @Override
+    public int hashCode() {
+        return from.hashCode()+to.hashCode();
+    }
+
+
+    @Override
     public String toString() {
         return "{" +
-            " from='" + getFrom() + "'" +
-            ", \nto='" + getTo() + "'" +
-            ", departureTime='" + getDepartureTime() + "'" +
-            ", arrivalTime='" + getArrivalTime() + "'" +
-            ", travelTime='" + getTravelTime() + "'" +
+            " from='" + getFrom().getStop().getName() + "'" +
+            ", to='" + getTo().getStop().getName() + "'" +
+            ", on line=' " + getRoute().getShortName() + " towards " + getTrip().getHeadsign() + "'" +
+            ", \ndeparture='" + getDepartureTime() + "'" +
+            ", arrival='" + getArrivalTime() + "'" +
+            ", total travel time='" + getTravelTime() + "'" +
+
             "}";
     }
 

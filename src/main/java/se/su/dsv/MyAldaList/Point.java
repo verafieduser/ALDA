@@ -1,6 +1,10 @@
+/**
+ * @author Vera Sol Nygren
+ * klny8594
+ */
 package se.su.dsv.MyAldaList;
 
-public class Point implements Comparable<Point> {
+public class Point {
     private final int x, y;
 
     public Point(int x, int y) {
@@ -9,25 +13,12 @@ public class Point implements Comparable<Point> {
     }
 
     public double distanceTo(Point o) {
-        double distance;
-        if(this.compareTo(o) > 0){
-            distance = Math.hypot(x-o.x, y-o.y);
-        } else {
-            distance = Math.hypot(o.x-x, o.y-y);
-        }
-
         //Pythagoras:
-        //double distance = Math.hypot(Math.max(x, o.x) - Math.min(x,o.x), Math.max(y, o.y) - Math.min(y, o.y));
-
-        
-
-        //Avrundar till 2 decimaler för att standardisera värdena:
-        return distance;//Math.round(distance * 10d) / 10d;
+        return Math.hypot((double)x-o.x, (double)y-o.y);
     }
 
     public double xDistance(Point o) {
-        return Integer.max(x, o.x) - Integer.min(x, o.x);
-
+        return Math.abs(x - o.x);
     }
 
     public int getX() {
@@ -39,12 +30,7 @@ public class Point implements Comparable<Point> {
     }
 
     public double yDistance(Point o) {
-        return Integer.max(y, o.y) - Integer.min(y, o.y);
-    }
-
-    @Override
-    public int compareTo(Point o) {
-        return Integer.compare(x, o.x);
+        return Math.abs(y-o.y);
     }
 
     @Override
@@ -62,5 +48,15 @@ public class Point implements Comparable<Point> {
     public int hashCode() {
         return x * 10000 + y;
     }
+
+
+    @Override
+    public String toString() {
+        return "{" +
+            " x='" + getX() + "'" +
+            ", y='" + getY() + "'" +
+            "}";
+    }
+
 
 }

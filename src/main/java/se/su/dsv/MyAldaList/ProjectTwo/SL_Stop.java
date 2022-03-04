@@ -1,14 +1,17 @@
 package se.su.dsv.MyAldaList.ProjectTwo;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class SL_Stop{
     private int id;
     private String name;
-    List<SL_Trip> connections = new LinkedList<>();
+    List<SL_Trip> trips = new LinkedList<>();
+    Set<SL_Route> routes = new HashSet<>();
     List<Edge> edges = new LinkedList<>();
     private double[] latlon;
 
@@ -18,17 +21,18 @@ public class SL_Stop{
         latlon = new double[] {stop_lat, stop_lon};
     }
 
-    public boolean addConnection(SL_Trip connection){
-        Edge edge = connection.getNext(this);
+    public boolean addConnection(SL_Trip trip){
+        Edge edge = trip.getNext(this);
+        routes.add(trip.getRoute());
         if(edge != null){
             edges.add(edge);
         }
-        return connections.add(connection);
+        return trips.add(trip);
     }
 
     public void addEdges(){
-        for(SL_Trip connection : connections){
-            Edge edge = connection.getNext(this);
+        for(SL_Trip trip : trips){
+            Edge edge = trip.getNext(this);
             if(edge!=null){
                 edges.add(edge);
             }
@@ -55,7 +59,7 @@ public class SL_Stop{
     }
 
     public List<SL_Trip> getConnections() {
-        return connections;
+        return trips;
     }
 
     public List<Edge> getEdges() {
@@ -69,7 +73,7 @@ public class SL_Stop{
     private String printRoutes(){
         StringBuilder sb = new StringBuilder();
         SL_Route lastRoute = null;
-        for(SL_Trip trip : connections){
+        for(SL_Trip trip : trips){
             SL_Route thisRoute = trip.getRoute(); 
             if(lastRoute != thisRoute){
                 sb.append("\n\t" + thisRoute);  

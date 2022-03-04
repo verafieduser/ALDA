@@ -10,19 +10,19 @@ public class SL_Trip {
     /**
      * Unique identifier for trip:
      */
-    private long trip_id;
+    private long id;
     /**
      * Terminal station name:
      */
-    private String trip_headsign;
+    private String headsign;
 
     private List<SL_Stop_Time> stopTimes = new ArrayList<>();
     private List<SL_Stop> stops = new LinkedList<>();
 
-    public SL_Trip(SL_Route route, long trip_id, String trip_headsign) {
+    public SL_Trip(SL_Route route, long id, String headsign) {
         this.route = route;
-        this.trip_id = trip_id;
-        this.trip_headsign = trip_headsign;
+        this.id = id;
+        this.headsign = headsign;
     }
 
     public SL_Stop_Time getStopTime(int i) {
@@ -69,20 +69,20 @@ public class SL_Trip {
         return this.route;
     }
 
-    public long getTrip_id() {
-        return this.trip_id;
+    public long getId() {
+        return this.id;
     }
 
-    public String getTrip_headsign() {
-        return this.trip_headsign;
+    public String getHeadsign() {
+        return this.headsign;
     }
 
     @Override
     public String toString() {
         return "{" +
                 " route='" + getRoute() + "'" +
-                ", trip_id='" + getTrip_id() + "'" +
-                ", trip_headsign='" + getTrip_headsign() + "'" +
+                ", id='" + getId() + "'" +
+                ", headsign='" + getHeadsign() + "'" +
                 ", stopTimes='" + getStopTimes() + "'" +
                 // ", stops='" + getStops() + "'" +
                 "}";
