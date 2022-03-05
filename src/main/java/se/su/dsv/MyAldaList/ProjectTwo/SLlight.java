@@ -29,6 +29,9 @@ import java.util.List;
  *              Gör ovan steg 3 gånger, om fortfarande inget - kolla en station på näst bästa färdmedel om något finns.
  *      
  * Kör till man hittat tre vägar, föreslå alla dom i snabbhetsordning?
+ * 
+ * Använd koordinater för att lista ut riktning? Är det vad man gör om det finns flera av samma färdmedel kanske?
+ * 
  */     
 
 public class SLlight {
