@@ -1,4 +1,4 @@
-package se.su.dsv.MyAldaList;
+package se.su.dsv.MyAldaList.Complete;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;

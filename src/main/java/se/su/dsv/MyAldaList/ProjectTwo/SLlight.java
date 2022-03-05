@@ -25,8 +25,10 @@ import java.util.List;
  *                  
  *      2: Om de inte delar någon route...: 
  *          Ta en station i taget åt vardera håll (om bägge finns) med bästa färdmedel. Utför steg 1 på den. 
- *          Steg 1 på nuvarande station. 
+ *          - Steg 1 på nuvarande station. 
+ *              Gör ovan steg 3 gånger, om fortfarande inget - kolla en station på näst bästa färdmedel om något finns.
  *      
+ * Kör till man hittat tre vägar, föreslå alla dom i snabbhetsordning?
  */     
 
 public class SLlight {
