@@ -70,6 +70,10 @@ public class SL_Stop{
         return this.name;
     }
 
+    public Set<SL_Route> getRoutes() {
+        return routes;
+    }
+
     private String printRoutes(){
         StringBuilder sb = new StringBuilder();
         SL_Route lastRoute = null;

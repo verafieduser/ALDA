@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class SL_Route{
+public class SL_Route implements Comparable<SL_Route>{
     private long id;
     private short shortName;
     private String type;
@@ -76,6 +76,17 @@ public class SL_Route{
         return shortName;
     }
 
+
+    @Override
+    public int compareTo(SL_Route o) {
+        int value = 0;
+        if(type.equals("metro") && (o.type.equals("bus") || o.type.equals("tramway"))){
+            value = 1;
+        } else if((type.equals("bus") || type.equals("tramway")) && o.type.equals("metro")){
+            value = -1;
+        } 
+        return value;
+    }
 
 
     @Override
