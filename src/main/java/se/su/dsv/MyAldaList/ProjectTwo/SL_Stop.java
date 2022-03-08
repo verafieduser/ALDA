@@ -7,13 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class SL_Stop{
-    private int id;
-    private String name;
-    List<SL_Trip> trips = new LinkedList<>();
-    Set<SL_Route> routes = new HashSet<>();
-    List<Edge> edges = new LinkedList<>();
-    private double[] latlon;
+public class SL_Stop implements Comparable<SL_Stop>{
+    private final int id;
+    private final String name;
+    private final List<SL_Trip> trips = new LinkedList<>();
+    private final Set<SL_Route> routes = new HashSet<>();
+    private final List<Edge> edges = new LinkedList<>();
+    private final double[] latlon;
+    private double score;
+    private SL_Stop previous;
 
     public SL_Stop(int stop_id, String stop_name, double stop_lat, double stop_lon) {
         this.id = stop_id;
@@ -39,6 +41,14 @@ public class SL_Stop{
         }
     }
 
+    public void setPrevious(SL_Stop previous) {
+        this.previous = previous;
+    }
+
+    public SL_Stop getPrevious() {
+        return previous;
+    }
+
     public Edge[] edgesAtSpecificTime(Time earliestTime){
         Map<SL_Stop, Edge> map = new HashMap<>();
         for(Edge edge : edges){
@@ -56,6 +66,14 @@ public class SL_Stop{
 
     public int getId() {
         return this.id;
+    }
+    
+    public double getScore() {
+        return score;
+    }
+
+    public void setScore(double score) {
+        this.score = score;
     }
 
     public List<SL_Trip> getConnections() {
@@ -100,6 +118,35 @@ public class SL_Stop{
             ", \n\tconnections='" + printRoutes() + "'" +
             ", \n\tstop_latlon='" + latlon[0] +"|" + latlon[1]  + "'" +
             "}";
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof SL_Stop)) {
+            return false;
+        }
+        SL_Stop oStop = (SL_Stop) o;
+        return id==oStop.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
+
+    @Override
+    public int compareTo(SL_Stop o) {
+        int value = 0;
+        if(score > o.score){
+            value = 1;
+        } else if(score < o.score){
+            value = -1;
+        }
+        return value;
     }
 
 

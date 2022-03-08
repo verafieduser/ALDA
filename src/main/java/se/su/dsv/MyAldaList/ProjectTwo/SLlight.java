@@ -4,20 +4,16 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 
-//TODO: Djikstras baserat på avgångstid
+//TODO: FOCUS ON DATASTRUCTURE > ALGORITHM! 
+// bc G=Datastructure VG=Algorithm 
 //TODO: A* för att hitta rätt väg.
-//TODO: Implementera gångavstånd via long/lat-avstånd? 
-//TODO: Effektivisera via att kolla ifall de befinner sig på samma linje? Eller t.o.m. linjerna som går från linjen?
-//TODO: Kartkoordinater!
-
-//TODO: bedöm vilka linjer som är vilka färdmedel. 
-//TODO: prioritera linjer som finns i targets connections. 
+//TODO: OOP - separera node från stop!!!
 
 /**
  * Heuristic:
@@ -48,6 +44,13 @@ public class SLlight {
         sl.initialize();
     }
 
+/*     private List<SL_Stop_Time> reconstructPath(cameFrom, current){
+        totalPath = current;
+        for(SL_Stop_Time stop : current.getKeys()){
+            current 
+            
+        }
+    } */
 
 
     /*
@@ -57,48 +60,103 @@ public class SLlight {
         current := cameFrom[current]
         total_path.prepend(current)
     return total_path
+*/
 
-// A* finds a path from start to goal.
-// h is the heuristic function. h(n) estimates the cost to reach goal from node n.
+
+/**
+ * Taken from https://www.baeldung.com/java-a-star-pathfinding
+ * @param from
+ * @param to
+ * @return
+ */
+public double calculateDistance(SL_Stop from, SL_Stop to) {
+    double R = 6372.8; // Earth's Radius, in kilometers
+    double[] fromCoords = from.getLatlon();
+    double[] toCoords = to.getLatlon();
+
+    double dLat = Math.toRadians(toCoords[0] - fromCoords[0]);
+    double dLon = Math.toRadians(toCoords[1] - fromCoords[1]);
+    double lat1 = Math.toRadians(fromCoords[1]);
+    double lat2 = Math.toRadians(toCoords[1]);
+
+    double a = Math.pow(Math.sin(dLat / 2),2)
+      + Math.pow(Math.sin(dLon / 2),2) * Math.cos(lat1) * Math.cos(lat2);
+    double c = 2 * Math.asin(Math.sqrt(a));
+    return R * c;
+}
+
+//https://www.baeldung.com/java-a-star-pathfinding
+public List<SL_Stop> A_Star(SL_Stop start, SL_Stop goal, Time earliestDeparture){
+    Queue<SL_Stop> foundNodes = new PriorityQueue<>();
+    start.setScore(calculateDistance(start, goal));
+    foundNodes.add(start);
+
+    while(!foundNodes.isEmpty()){
+        SL_Stop current = foundNodes.poll(); //chooses the one with lowest estimated score
+        if(current.equals(goal)){
+            List<SL_Stop> path = new LinkedList<>(); 
+            while(current != null){
+                path.add(current);
+                current = current.getPrevious();
+            }
+            return path;
+            
+        }
+        for(Edge edge : current.getEdges()){
+            SL_Stop stop = edge.getTo().getStop();
+            //this calculation might have to be more complicated?
+            stop.setScore(calculateDistance(stop, goal));
+            stop.setPrevious(current);
+            foundNodes.add(stop);
+
+        }
+    }
+
+    return null;
+}
+
+/*
+    // A* finds a path from start to goal.
+    // h is the heuristic function. h(n) estimates the cost to reach goal from node n.
 function A_Star(start, goal, h)
-    // The set of discovered nodes that may need to be (re-)expanded.
-    // Initially, only the start node is known.
-    // This is usually implemented as a min-heap or priority queue rather than a hash-set.
+        // The set of discovered nodes that may need to be (re-)expanded.
+        // Initially, only the start node is known.
+        // This is usually implemented as a min-heap or priority queue rather than a hash-set.
     openSet := {start}
 
-    // For node n, cameFrom[n] is the node immediately preceding it on the cheapest path from start
-    // to n currently known.
+        // For node n, cameFrom[n] is the node immediately preceding it on the cheapest path from start
+        // to n currently known.
     cameFrom := an empty map
 
-    // For node n, gScore[n] is the cost of the cheapest path from start to n currently known.
+        // For node n, gScore[n] is the cost of the cheapest path from start to n currently known.
     gScore := map with default value of Infinity
     gScore[start] := 0
 
-    // For node n, fScore[n] := gScore[n] + h(n). fScore[n] represents our current best guess as to
-    // how short a path from start to finish can be if it goes through n.
+        // For node n, fScore[n] := gScore[n] + h(n). fScore[n] represents our current best guess as to
+        // how short a path from start to finish can be if it goes through n.
     fScore := map with default value of Infinity
     fScore[start] := h(start)
 
     while openSet is not empty
-        // This operation can occur in O(Log(N)) time if openSet is a min-heap or a priority queue
+            // This operation can occur in O(Log(N)) time if openSet is a min-heap or a priority queue
         current := the node in openSet having the lowest fScore[] value
         if current = goal
             return reconstruct_path(cameFrom, current)
 
         openSet.Remove(current)
         for each neighbor of current
-            // d(current,neighbor) is the weight of the edge from current to neighbor
-            // tentative_gScore is the distance from start to the neighbor through current
+                // d(current,neighbor) is the weight of the edge from current to neighbor
+                // tentative_gScore is the distance from start to the neighbor through current
             tentative_gScore := gScore[current] + d(current, neighbor)
             if tentative_gScore < gScore[neighbor]
-                // This path to neighbor is better than any previous one. Record it!
+                    // This path to neighbor is better than any previous one. Record it!
                 cameFrom[neighbor] := current
                 gScore[neighbor] := tentative_gScore
                 fScore[neighbor] := tentative_gScore + h(neighbor)
                 if neighbor not in openSet
                     openSet.add(neighbor)
 
-    // Open set is empty but goal was never reached
+        // Open set is empty but goal was never reached
     return failure
 
 

@@ -38,6 +38,12 @@ public class SL_Route implements Comparable<SL_Route>{
         }
     }
 
+    public Set<SL_Stop> intersectingStops(SL_Route otherRoute){
+        Set<SL_Stop> intersection = stops;
+        intersection.retainAll(otherRoute.getStops());
+        return intersection;
+    }
+
     public boolean addTrip(SL_Trip trip){
         return trips.add(trip);
     }
@@ -46,6 +52,9 @@ public class SL_Route implements Comparable<SL_Route>{
         return stops.add(stop);
     }
 
+    public Set<SL_Stop> getStops() {
+        return stops;
+    }
 
     public long getId() {
         return this.id;
