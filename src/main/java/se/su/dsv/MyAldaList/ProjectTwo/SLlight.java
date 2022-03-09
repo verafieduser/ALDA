@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -168,8 +169,17 @@ function A_Star(start, goal, h)
         //     System.out.println(edge);
         // }
 
-        System.out.println(stops.get(20).getEdges().get(0));
+        //System.out.println(stops.get(20).getEdges().get(0));
 
+
+        Graph graph = new Graph(null, null);
+        SL_Stop from = stops.get(1);
+        SL_Stop to = stops.get(20);
+        Time t = new Time("10:4:0");
+        System.out.println("Going from: " + from.getName() + " to: " + to.getName());
+        List<Edge> path = graph.aStar(from, to, t);
+        System.out.println(graph.printPath(path));
+        //System.out.println(path);
         // System.out.println(trips.get(0));
         // Time time1 = new Time("23:30:00");
         // Time time2 = new Time("07:40:00");
@@ -219,28 +229,15 @@ function A_Star(start, goal, h)
             long timeSeven = endTimeSeven - startTimeSeven;
             System.out.println("Adding edges to stops took: " + timeSix);
 
-            System.out.println("Total Import took: " + (timeOne + timeTwo + timeThree + timeFour + timeFive + timeSix + timeSeven));
+            System.out.println("Total Import took: " + (timeOne + 
+                                                        timeTwo + 
+                                                        timeThree + 
+                                                        timeFour + 
+                                                        timeFive + 
+                                                        timeSix + 
+                                                        timeSeven));
 
         tests();
-
-    }
-
-
-    public void graphify() {
-        for (SL_Trip trip : trips) {
-            for (int i = 0; i < trip.getStops().size(); i++) {
-
-            }
-        }
-        // SL_Stop is node class!
-        // create edges along trips, and add them to nodes. determine cost by time? use
-        // departure time to determine if path is
-        // traversable!
-    }
-
-    public LinkedList<SL_Stop_Time> djikstras() {
-
-        return null;
     }
 
     /**

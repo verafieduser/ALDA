@@ -5,10 +5,6 @@ public class Time implements Comparable<Time> {
     short[] time;
 
 
-    public Time(){
-        time = new short[] {24, 0, 0};
-        
-    }
 
     public Time(String timeString){
         String[] time = timeString.split(":");

@@ -22,39 +22,45 @@ public class Graph {
     }
 
 //https://www.baeldung.com/java-a-star-pathfinding
-public List<SL_Stop> aStar(SL_Stop start, SL_Stop goal, Time earliestDeparture){
+public List<Edge> aStar(SL_Stop start, SL_Stop goal, Time earliestTime){
     Queue<SL_Stop> foundNodes = new PriorityQueue<>();
     start.setCurrentRouteScore(new Time("0:0:0"));
     start.setDistanceToGoalScore(calculateDistance(start, goal));
     foundNodes.add(start);
-    return aStarRecursivePart(foundNodes, goal, 0);
+    return aStarRecursivePart(foundNodes, goal, 0, earliestTime);
 }
 
-private List<SL_Stop> aStarRecursivePart(Queue<SL_Stop> foundNodes, SL_Stop goal, int noOfPathsFound){
+private List<Edge> aStarRecursivePart(Queue<SL_Stop> foundNodes, SL_Stop goal, int noOfPathsFound, Time earliestTime){
     SL_Stop current = foundNodes.poll(); //chooses the one with lowest estimated score
     if(current.equals(goal)){
-        List<SL_Stop> path = new LinkedList<>(); 
-        while(current != null){
-            path.add(current);
-            current = current.getPrevious();
-        }
-        //if(noOfPathsFound<pathsToFind){
-        //    return aStarRecursivePart(foundNodes, goal, noOfPathsFound+1);
-        //}
-        return path;   
+        System.out.println("Found goal!");
+        return collectingPath(goal, earliestTime);
     }
-    for(Edge edge : current.getEdges()){
+
+    Time t = Time.plus(earliestTime, current.getCurrentRouteScore());
+    for(Edge edge : current.edgesAtSpecificTime(t)){
+        //System.out.println(edge);
         SL_Stop stop = edge.getTo().getStop();
-        Time newRouteScore = Time.plus(current.getCurrentRouteScore(), edge.getCost());
+        Time nextStopRouteCost = Time.plus(current.getCurrentRouteScore(), edge.getCost());
         //if the new connection takes less time than the old one, add it (prohibits visited nodes to be visited over n over)
-        if(newRouteScore.compareTo(stop.getCurrentRouteScore())<0){
-            stop.setCurrentRouteScore(newRouteScore);
+        if(nextStopRouteCost.compareTo(stop.getCurrentRouteScore())<0){
+            stop.setCurrentRouteScore(nextStopRouteCost);
             stop.setDistanceToGoalScore(calculateDistance(stop, goal));
             stop.setPrevious(current);
             foundNodes.add(stop);
         }
     }
-    return foundNodes.isEmpty() ? null : aStarRecursivePart(foundNodes, goal, noOfPathsFound);
+    return foundNodes.isEmpty() ? null : aStarRecursivePart(foundNodes, goal, noOfPathsFound, earliestTime);
+}
+
+private List<Edge> collectingPath(SL_Stop goal, Time earliestTime){
+    List<Edge> path = new LinkedList<>(); 
+    while(goal.getPrevious() != null){
+        //currently time is arrival
+        path.add(goal.getPrevious().edgeAtSpecificTime(earliestTime, goal));
+        goal = goal.getPrevious();
+    }
+    return path;   
 }
 
 /**
@@ -97,6 +103,28 @@ public double calculateDistance(SL_Stop from, SL_Stop to) {
             
         }
         return null;
+    }
+
+    public String printPath(List<Edge> path){
+        if(path==null || path.isEmpty()){
+            return "No path found!";
+        }
+        StringBuilder sb = new StringBuilder();
+        Time cost = new Time("0:0:0");
+        int shifts = 0;
+        for(int i = path.size()-1; i >= 0; i--){
+            Edge edge = path.get(i);
+            if(i>0 && !edge.getType().equals(path.get(i-1).getType())){
+                shifts++;
+            }
+            sb.append(  "\nFrom:\t" + edge.getFrom().getStop().getName() + "\n\t   departs at\t" + edge.getFrom().getDepartureTime() + 
+                        "\nTo:\t" + edge.getTo().getStop().getName() + "\n\t   arrives at\t" + edge.getTo().getDepartureTime() + 
+                        "\tThis step took:" + edge.getCost() + " and used the " + edge.getType());
+            cost = Time.plus(cost, edge.getCost());
+        }
+        sb.append("\nTotal time taken: " + cost + " and changed mode of transport " + shifts + " times");
+
+        return sb.toString();
     }
 
 }

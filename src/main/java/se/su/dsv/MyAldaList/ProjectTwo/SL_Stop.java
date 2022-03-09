@@ -22,7 +22,7 @@ public class SL_Stop implements Comparable<SL_Stop> {
         this.id = stopId;
         this.name = stopName;
         latlon = new double[] { stopLat, stopLon };
-        currentRouteScore = new Time();
+        currentRouteScore = new Time("99:00:00");
     }
 
     public boolean addConnection(SL_Trip trip) {
@@ -51,14 +51,26 @@ public class SL_Stop implements Comparable<SL_Stop> {
         return previous;
     }
 
+    public Edge edgeAtSpecificTime(Time earliestTime, SL_Stop stop){
+        Edge[] edgesAtTime = edgesAtSpecificTime(earliestTime);
+        for(Edge edge : edgesAtTime){
+            if(edge.getTo().getStop().equals(stop)){
+                return edge;
+            }
+        }
+        return null;
+    }
+
     public Edge[] edgesAtSpecificTime(Time earliestTime) {
         Map<SL_Stop, Edge> map = new HashMap<>();
         for (Edge edge : edges) {
             SL_Stop to = edge.getTo().getStop();
             SL_Stop_Time from = edge.getFrom();
+            //we are not interested in already departed times
             if (from.getDepartureTime().compareTo(earliestTime) >= 0) {
-                Edge edge2 = map.get(to);
-                if (edge2 == null || edge2.getFrom().getDepartureTime().compareTo(from.getDepartureTime()) < 0) {
+                Edge old = map.get(to);
+                //if new is earlier than old one, if there is one, add new:
+                if (old == null || from.getDepartureTime().compareTo(old.getFrom().getDepartureTime()) < 0) {
                     map.put(to, edge);
                 }
             }
