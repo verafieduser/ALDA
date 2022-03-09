@@ -4,6 +4,12 @@ public class Time implements Comparable<Time> {
 
     short[] time;
 
+
+    public Time(){
+        time = new short[] {24, 0, 0};
+        
+    }
+
     public Time(String timeString){
         String[] time = timeString.split(":");
         this.time = new short[time.length];
@@ -57,6 +63,18 @@ public class Time implements Comparable<Time> {
         return checkIfTravelCostNegative(travelCost);
     } 
 
+    public static Time plus(Time t1, Time t2) {
+        short[] newTime = new short[3];
+        for(int i = 0; i < newTime.length; i++){
+            newTime[i] = (short)(t1.getTime()[i] + t2.getTime()[i]);
+            if(newTime[i]>60){
+                newTime[i-1]+=1;
+                newTime[i]-=60;
+            }
+        }
+        return new Time(newTime);
+    }
+
 
     private static Time checkIfTravelCostNegative(short[] travelCost){
         if(travelCost[0] < (short)0){
@@ -103,7 +121,7 @@ public class Time implements Comparable<Time> {
         for(int i = 0; i < time.length; i++){
             if(time[i] > o.time[i]){
                 return 1;
-            } else if (time[i] > o.time[i]){
+            } else if (time[i] < o.time[i]){
                 return -1;
             }
         }

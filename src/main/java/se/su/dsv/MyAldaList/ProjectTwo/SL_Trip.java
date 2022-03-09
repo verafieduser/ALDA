@@ -2,7 +2,6 @@ package se.su.dsv.MyAldaList.ProjectTwo;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedList;
 
 public class SL_Trip {
@@ -49,7 +48,7 @@ public class SL_Trip {
         }
 
         to = stopTimes.get(currentStopSeq);
-        return new Edge(from, to);
+        return new Edge(from, to, route.getType());
     }
 
     public List<SL_Stop_Time> getStopTimes() {

@@ -63,57 +63,7 @@ public class SLlight {
 */
 
 
-/**
- * Taken from https://www.baeldung.com/java-a-star-pathfinding
- * @param from
- * @param to
- * @return
- */
-public double calculateDistance(SL_Stop from, SL_Stop to) {
-    double R = 6372.8; // Earth's Radius, in kilometers
-    double[] fromCoords = from.getLatlon();
-    double[] toCoords = to.getLatlon();
 
-    double dLat = Math.toRadians(toCoords[0] - fromCoords[0]);
-    double dLon = Math.toRadians(toCoords[1] - fromCoords[1]);
-    double lat1 = Math.toRadians(fromCoords[1]);
-    double lat2 = Math.toRadians(toCoords[1]);
-
-    double a = Math.pow(Math.sin(dLat / 2),2)
-      + Math.pow(Math.sin(dLon / 2),2) * Math.cos(lat1) * Math.cos(lat2);
-    double c = 2 * Math.asin(Math.sqrt(a));
-    return R * c;
-}
-
-//https://www.baeldung.com/java-a-star-pathfinding
-public List<SL_Stop> A_Star(SL_Stop start, SL_Stop goal, Time earliestDeparture){
-    Queue<SL_Stop> foundNodes = new PriorityQueue<>();
-    start.setScore(calculateDistance(start, goal));
-    foundNodes.add(start);
-
-    while(!foundNodes.isEmpty()){
-        SL_Stop current = foundNodes.poll(); //chooses the one with lowest estimated score
-        if(current.equals(goal)){
-            List<SL_Stop> path = new LinkedList<>(); 
-            while(current != null){
-                path.add(current);
-                current = current.getPrevious();
-            }
-            return path;
-            
-        }
-        for(Edge edge : current.getEdges()){
-            SL_Stop stop = edge.getTo().getStop();
-            //this calculation might have to be more complicated?
-            stop.setScore(calculateDistance(stop, goal));
-            stop.setPrevious(current);
-            foundNodes.add(stop);
-
-        }
-    }
-
-    return null;
-}
 
 /*
     // A* finds a path from start to goal.
