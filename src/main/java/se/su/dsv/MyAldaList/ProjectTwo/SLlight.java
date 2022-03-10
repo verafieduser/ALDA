@@ -4,17 +4,19 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.Scanner;
 import java.util.Set;
 
 //TODO: FOCUS ON DATASTRUCTURE > ALGORITHM! 
 // bc G=Datastructure VG=Algorithm 
+//TODO: metod för att hitta noder baserat på namn?
 //TODO: A* för att hitta rätt väg.
-//TODO: OOP - separera node från stop!!!
+//TODO: OOP - separera node från stop?
+//TODO: några stopTimes saknar trips? t.ex. jarlaberg?
+//TODO: tror det har att göra med slutstationer!
 
 /**
  * Heuristic:
@@ -35,209 +37,103 @@ import java.util.Set;
  */     
 
 public class SLlight {
-    List<SL_Stop> stops = new ArrayList<>();
+
+    Graph graph;
+    Scanner in;
+
+    Set<SL_Stop> stops = new HashSet<>();
     List<SL_Stop_Time> stopTimes = new ArrayList<>();
     List<SL_Route> routes = new LinkedList<>();
     List<SL_Trip> trips = new LinkedList<>();
 
     public static void main(String[] args) {
         SLlight sl = new SLlight();
-        sl.initialize();
+        sl.initializeData(true);
+        sl.tests();
+        //queryUser();
     }
-
-/*     private List<SL_Stop_Time> reconstructPath(cameFrom, current){
-        totalPath = current;
-        for(SL_Stop_Time stop : current.getKeys()){
-            current 
-            
-        }
-    } */
-
-
-    /*
-    function reconstruct_path(cameFrom, current)
-    total_path := {current}
-    while current in cameFrom.Keys:
-        current := cameFrom[current]
-        total_path.prepend(current)
-    return total_path
-*/
-
-
-
-
-/*
-    // A* finds a path from start to goal.
-    // h is the heuristic function. h(n) estimates the cost to reach goal from node n.
-function A_Star(start, goal, h)
-        // The set of discovered nodes that may need to be (re-)expanded.
-        // Initially, only the start node is known.
-        // This is usually implemented as a min-heap or priority queue rather than a hash-set.
-    openSet := {start}
-
-        // For node n, cameFrom[n] is the node immediately preceding it on the cheapest path from start
-        // to n currently known.
-    cameFrom := an empty map
-
-        // For node n, gScore[n] is the cost of the cheapest path from start to n currently known.
-    gScore := map with default value of Infinity
-    gScore[start] := 0
-
-        // For node n, fScore[n] := gScore[n] + h(n). fScore[n] represents our current best guess as to
-        // how short a path from start to finish can be if it goes through n.
-    fScore := map with default value of Infinity
-    fScore[start] := h(start)
-
-    while openSet is not empty
-            // This operation can occur in O(Log(N)) time if openSet is a min-heap or a priority queue
-        current := the node in openSet having the lowest fScore[] value
-        if current = goal
-            return reconstruct_path(cameFrom, current)
-
-        openSet.Remove(current)
-        for each neighbor of current
-                // d(current,neighbor) is the weight of the edge from current to neighbor
-                // tentative_gScore is the distance from start to the neighbor through current
-            tentative_gScore := gScore[current] + d(current, neighbor)
-            if tentative_gScore < gScore[neighbor]
-                    // This path to neighbor is better than any previous one. Record it!
-                cameFrom[neighbor] := current
-                gScore[neighbor] := tentative_gScore
-                fScore[neighbor] := tentative_gScore + h(neighbor)
-                if neighbor not in openSet
-                    openSet.add(neighbor)
-
-        // Open set is empty but goal was never reached
-    return failure
-
-
-
-    
-    */
-
-    public Path findPath(SL_Stop from, SL_Stop to, Time earliestTime){
-        List<Path> paths = new LinkedList<>();
-        List<SL_Stop_Time> firstPartOfPath = new LinkedList<>();
-
-
-        paths.addAll(findCommmonRoutes(new Path(null, to), from, to, earliestTime));
-
-        //TODO: find best path out of paths!
-
-        return null;
-    }
-
-    public List<Path> findCommmonRoutes(Path path, SL_Stop from, SL_Stop to, Time earliestTime){
-        List<Path> paths = new LinkedList<>();
-        path.addStop(from);
-        
-        Set<SL_Route> fromRoutes = from.getRoutes();
-        Set<SL_Route> toRoutes = to.getRoutes();
-        
-        List<SL_Route> routesInCommon = new ArrayList<>();
-        for(SL_Route route : fromRoutes){
-            if(toRoutes.contains(route)){
-                routesInCommon.add(route);
-                paths.add(new Path(route, to, path.getFirstPartOfPath()));
-            }
-        }
-        if(routesInCommon.isEmpty()){
-            //sort transport options in from
-            //visited nodes so far are in the path. 
-            //take a node in the direction of to according to longlat. 
-            //recur on this method. 
-
-            //NOTE: need to make sure if you come to subway intersection, 
-            //you take the best subway direction, even if it implies shifting? have a boolean determine if this is active?
-
-            //NOTE: 
-        }
-
-        routesInCommon.sort(null); //sorted by best transport option. should be a more hard core sorting though?
-        for(int i = 0; i < routesInCommon.size() && i<3; i++){
-
-        }
-
-        return paths;
-    }
-
-    
 
     private void tests(){
-        // Edge[] edges=stops.get(50).edgesAtSpecificTime(new Time("16:00:00"));
-        // for(Edge edge : edges){
-        //     System.out.println(edge);
-        // }
 
-        //System.out.println(stops.get(20).getEdges().get(0));
-
-
-        Graph graph = new Graph(null, null);
-        SL_Stop from = stops.get(1);
-        SL_Stop to = stops.get(20);
-        Time t = new Time("10:4:0");
-        System.out.println("Going from: " + from.getName() + " to: " + to.getName());
-        List<Edge> path = graph.aStar(from, to, t);
-        System.out.println(graph.printPath(path));
-        //System.out.println(path);
-        // System.out.println(trips.get(0));
-        // Time time1 = new Time("23:30:00");
-        // Time time2 = new Time("07:40:00");
-        // System.out.println(Time.timeDifference(time1, time2));
+            graph = new Graph(stops);
+            SL_Stop from = graph.findNode("Jarlaberg");
+            SL_Stop to = graph.findNode("Stockholm Sickla Kaj");
+            String result = graph.printPath(graph.aStar(from, to, new Time("14:21:00"), false));
+            System.out.println(result);
     }
 
-    public void initialize() {
+    public void queryUser() {
+        do{
+            SL_Stop[] fromAndTo = queryUserAboutTrip();
+            SL_Stop from = fromAndTo[0];
+            SL_Stop to = fromAndTo[1];
+            boolean resultByArrival = queryUserAboutTime();
+            Time t = queryUserAboutWhen();
+            System.out.println("Going from: " + from.getName() + " to: " + to.getName());
+            List<Edge> path = graph.aStar(from, to, t, resultByArrival);
+            System.out.println(graph.printPath(path));
+            System.out.println("Press enter for another trip: ");
+        } while((in.nextLine().equalsIgnoreCase("")));
+
+        in.close();
+    }
+
+    public SL_Stop[] queryUserAboutTrip() {
+        String errorMessage = "Station could not be found. Try again";
+        SL_Stop from = findNode("Going from : ", errorMessage);
+        SL_Stop to = findNode("Going to: ", errorMessage);
+        return new SL_Stop[] {from, to};
+    }
+
+    public boolean queryUserAboutTime(){
+        System.out.println("Do you want to have an answer by departure time, or arrival time?");
+        String answer = in.nextLine();
+        return answer.equalsIgnoreCase("arrival") ? true : false;
+    }
+
+    public Time queryUserAboutWhen(){
+        System.out.println("Enter time in format \"xx:xx:xx\": ");
+        String answer = in.nextLine();
+        return new Time(answer);
+    }
+
+    private SL_Stop findNode(String information, String errorMessage){
+        System.out.println(information);
+        String query = in.nextLine();
+        SL_Stop result = graph.findNode(query);
+        while(result==null){
+            System.out.println(errorMessage);
+            System.out.println(information);
+            query = in.nextLine();
+            result = graph.findNode(query);
+        }
+        return result;
+    }
+
+    public void initializeData(boolean withTimePrints) {
             long startTimeOne = System.currentTimeMillis();
         importCSV("sl_routes");
+
+        importCSV("sl_stops");
+        importCSV("sl_trips");
+        importCSV("sl_stop_times");
             long endTimeOne = System.currentTimeMillis();
             long timeOne = endTimeOne - startTimeOne;
-            System.out.println("Import of Routes took: " + timeOne);
+            if(withTimePrints){
+                System.out.println("Importing from CSV took: " + timeOne);
+            }
 
             long startTimeTwo = System.currentTimeMillis();
-        importCSV("sl_stops");
+        addTripsToRoutes();
+        addTripsToStops();
+        addEdgesToStops();
             long endTimeTwo = System.currentTimeMillis();
             long timeTwo = endTimeTwo - startTimeTwo;
-            System.out.println("Import of Stops took: " + timeTwo);
-
-            long startTimeThree = System.currentTimeMillis();
-        importCSV("sl_trips");
-            long endTimeThree = System.currentTimeMillis();
-            long timeThree = endTimeThree - startTimeThree;
-            System.out.println("Import of Trips took: " + timeThree);
-
-            long startTimeFour = System.currentTimeMillis();
-        importCSV("sl_stop_times");
-            long endTimeFour = System.currentTimeMillis();
-            long timeFour = endTimeFour - startTimeFour;
-            System.out.println("Import of Stop Times took: " + timeFour);
-
-            long startTimeFive = System.currentTimeMillis();
-        addTripsToRoutes();
-            long endTimeFive = System.currentTimeMillis();
-            long timeFive = endTimeFive - startTimeFive;
-            System.out.println("Linking of Trips to Routes took: " + timeFive);
-
-            long startTimeSix = System.currentTimeMillis();
-        addTripsToStops();
-            long endTimeSix = System.currentTimeMillis();
-            long timeSix = endTimeSix - startTimeSix;
-            System.out.println("Linking of Routes to Stops took: " + timeSix);
-
-            long startTimeSeven = System.currentTimeMillis();
-        addEdgesToStops();
-            long endTimeSeven = System.currentTimeMillis();
-            long timeSeven = endTimeSeven - startTimeSeven;
-            System.out.println("Adding edges to stops took: " + timeSix);
-
-            System.out.println("Total Import took: " + (timeOne + 
-                                                        timeTwo + 
-                                                        timeThree + 
-                                                        timeFour + 
-                                                        timeFive + 
-                                                        timeSix + 
-                                                        timeSeven));
-
-        tests();
+            if(withTimePrints){
+                System.out.println("Linking graph together took: " + timeTwo);
+                System.out.println("Total Import took: " + (timeOne + timeTwo));
+            }
+        in = new Scanner(System.in);
     }
 
     /**
@@ -343,23 +239,23 @@ function A_Star(start, goal, h)
     }
 
     private void addStop(String[] lines) {
-        int stop_id = Integer.parseInt(lines[0]);
-        String stop_name = lines[1];
-        double stop_lat = Double.parseDouble(lines[2]);
-        double stop_lon = Double.parseDouble(lines[3]);
-        stops.add(new SL_Stop(stop_id, stop_name, stop_lat, stop_lon));
+        int stopId = Integer.parseInt(lines[0].substring(4));
+        String stopName = lines[1];
+        double stopLat = Double.parseDouble(lines[2]);
+        double stopLon = Double.parseDouble(lines[3]);
+        stops.add(new SL_Stop(stopId, stopName, stopLat, stopLon));
     }
 
     private void addRoute(String[] lines) {
-        long route_id = Long.parseLong(lines[0]);
-        short route_short_name = Short.parseShort(lines[2]);
+        int routeId = Integer.parseInt(lines[0].substring(6));
+        short routeShortName = Short.parseShort(lines[2]);
         // String route_long_name = lines[3];
-        short route_type = Short.parseShort(lines[3]);
-        routes.add(new SL_Route(route_id, route_short_name, route_type));
+        short routeType = Short.parseShort(lines[3]);
+        routes.add(new SL_Route(routeId, routeShortName, routeType));
     }
 
     private void addTrip(String[] lines) {
-        Long routeId = Long.parseLong(lines[0]);
+        int routeId = Integer.parseInt(lines[0].substring(6));
         SL_Route line = null;
         for (SL_Route route : routes) {
             if (route.getId() == routeId) {
@@ -367,14 +263,14 @@ function A_Star(start, goal, h)
             }
         }
 
-        Long trip_id = Long.parseLong(lines[2]);
-        String trip_headsign = lines[3];
-        trips.add(new SL_Trip(line, trip_id, trip_headsign)); // add dependency!!!
+        int tripId = Integer.parseInt(lines[2].substring(6));
+        String tripHeadsign = lines[3];
+        trips.add(new SL_Trip(line, tripId, tripHeadsign)); // add dependency!!!
     }
 
     private void addStopTime(String[] lines) {
         String departureTime = lines[2];
-        int stopId = Integer.parseInt(lines[3]);
+        int stopId = Integer.parseInt(lines[3].substring(4));
         SL_Stop location = null;
         for (SL_Stop stop : stops) {
             if (stop.getId() == stopId) {
@@ -382,14 +278,14 @@ function A_Star(start, goal, h)
                 break;
             }
         }
-        short stop_sequence = Short.parseShort(lines[4]);
+        short stopSequence = Short.parseShort(lines[4]);
 
-        Long tripId = Long.parseLong(lines[0]);
+        int tripId = Integer.parseInt(lines[0].substring(6));
         SL_Trip tripStop = null;
         for (SL_Trip trip : trips) {
             if (trip.getId() == tripId) {
                 tripStop = trip;
-                SL_Stop_Time stopTime = new SL_Stop_Time(tripStop, departureTime, location, stop_sequence);
+                SL_Stop_Time stopTime = new SL_Stop_Time(tripStop, departureTime, location, stopSequence);
                 trip.addStopTime(stopTime);
                 stopTimes.add(stopTime);
                 break;

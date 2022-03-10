@@ -44,6 +44,16 @@ public class SL_Route implements Comparable<SL_Route>{
         return intersection;
     }
 
+
+    public Set<SL_Route> intersectingRoutes(){
+        Set<SL_Route> intersection = new HashSet<>();
+        for(SL_Stop stop : stops){
+            intersection.addAll(stop.getRoutes());
+        }
+
+        return intersection;
+    }
+
     public boolean addTrip(SL_Trip trip){
         return trips.add(trip);
     }

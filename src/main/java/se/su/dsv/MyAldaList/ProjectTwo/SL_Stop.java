@@ -51,8 +51,8 @@ public class SL_Stop implements Comparable<SL_Stop> {
         return previous;
     }
 
-    public Edge edgeAtSpecificTime(Time earliestTime, SL_Stop stop){
-        Edge[] edgesAtTime = edgesAtSpecificTime(earliestTime);
+    public Edge edgeAtEarliestTime(Time earliestTime, SL_Stop stop){
+        Edge[] edgesAtTime = edgesAtEarliestTime(earliestTime);
         for(Edge edge : edgesAtTime){
             if(edge.getTo().getStop().equals(stop)){
                 return edge;
@@ -61,7 +61,7 @@ public class SL_Stop implements Comparable<SL_Stop> {
         return null;
     }
 
-    public Edge[] edgesAtSpecificTime(Time earliestTime) {
+    public Edge[] edgesAtEarliestTime(Time earliestTime) {
         Map<SL_Stop, Edge> map = new HashMap<>();
         for (Edge edge : edges) {
             SL_Stop to = edge.getTo().getStop();
@@ -76,6 +76,37 @@ public class SL_Stop implements Comparable<SL_Stop> {
             }
         }
         return map.values().toArray(new Edge[map.size()]);
+    }
+
+    public Edge edgeAtLatestTime(Time latestTime, SL_Stop stop){
+        Edge[] edgesAtTime = edgesAtLatestTime(latestTime);
+        for(Edge edge : edgesAtTime){
+            if(edge.getTo().getStop().equals(stop)){
+                return edge;
+            }
+        }
+        return null;
+    }
+
+    public Edge[] edgesAtLatestTime(Time latestTime) {
+        Map<SL_Stop, Edge> map = new HashMap<>();
+        for (Edge edge : edges) {
+            SL_Stop to = edge.getTo().getStop();
+            SL_Stop_Time from = edge.getFrom();
+            //we are not interested in already departed times
+            if (from.getDepartureTime().compareTo(latestTime) <= 0) {
+                Edge old = map.get(to);
+                //if new is earlier than old one, if there is one, add new:
+                if (old == null || from.getDepartureTime().compareTo(old.getFrom().getDepartureTime()) > 0) {
+                    map.put(to, edge);
+                }
+            }
+        }
+        return map.values().toArray(new Edge[map.size()]);
+    }
+
+    public Set<Edge> getUniqueEdges(){
+        return new HashSet<>(edges);
     }
 
     public int getId() {

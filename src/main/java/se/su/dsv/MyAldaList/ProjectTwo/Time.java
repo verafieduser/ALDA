@@ -1,10 +1,20 @@
 package se.su.dsv.MyAldaList.ProjectTwo;
 
+import java.time.LocalTime;
+
 public class Time implements Comparable<Time> {
 
     short[] time;
 
 
+
+    public Time() {
+        LocalTime currentTime = java.time.LocalTime.now();
+        time = new short[3];
+        time[0] = (short)currentTime.getHour();
+        time[1] = (short)currentTime.getMinute();
+        time[2] = (short)currentTime.getSecond();
+    }
 
     public Time(String timeString){
         String[] time = timeString.split(":");
@@ -71,6 +81,14 @@ public class Time implements Comparable<Time> {
         return new Time(newTime);
     }
 
+    public static Time minus(Time t1, Time t2) {
+        short[] newTime = new short[3];
+        for(int i = 0; i < newTime.length; i++){
+            newTime[i] = (short)(t1.getTime()[i] - t2.getTime()[i]);
+        }
+        return checkIfTravelCostNegative(newTime);
+    }
+
 
     private static Time checkIfTravelCostNegative(short[] travelCost){
         if(travelCost[0] < (short)0){
@@ -104,11 +122,7 @@ public class Time implements Comparable<Time> {
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        for(int i = 0; i < time.length; i++){
-            hash += time[i] * 100;
-        }
-        return hash;
+        return 100*time[0]+time[1];
     }
 
 
@@ -127,9 +141,19 @@ public class Time implements Comparable<Time> {
 
     @Override
     public String toString() {
-        return "{" +
-            "'" + time[0] + ":" + time[1] + ":" + time[2] + "'" +
-            "}";
+        String[] timeAsString = new String[time.length];
+        for(int i = 0; i < time.length; i++){
+            timeAsString[i] = String.valueOf(time[i]);
+            if(timeAsString[i].length()<2){
+                timeAsString[i] = "0" + timeAsString[i];
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        for(int i = 0; i < timeAsString.length; i++){
+            sb.append(timeAsString[i] + ":");
+        }
+        return (sb.substring(0, sb.length()-1)+"}").toString();
     }
 
     
