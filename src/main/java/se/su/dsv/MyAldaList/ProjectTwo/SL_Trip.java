@@ -41,6 +41,12 @@ public class SL_Trip {
         if(from == null){
             return null;
         }
+
+        return getNext(from);
+    }
+
+    public Edge getNext(SL_Stop_Time from) {
+        SL_Stop_Time to = null; 
         int currentStopSeq = from.getSequence();
 
         if(currentStopSeq >= stopTimes.size()-1){
@@ -49,6 +55,41 @@ public class SL_Trip {
 
         to = stopTimes.get(currentStopSeq);
         return new Edge(from, to, route.getType());
+    }
+
+    public List<Edge> getPath(SL_Stop from, SL_Stop to) {
+        return getPath(getStopTime(from), getStopTime(to));
+    }
+
+    public List<Edge> getPath(SL_Stop_Time from, SL_Stop_Time to){
+        List<Edge> path = new LinkedList<>();
+        int fromSeq = from.getSequence();
+        int toSeq = to.getSequence();
+
+        for(int i = fromSeq-1; i <= toSeq-2; i++){
+            path.add(0, new Edge(stopTimes.get(i), stopTimes.get(i+1), route.getType()));
+        }
+        return path;
+    }
+
+    public boolean traversable(SL_Stop from, SL_Stop to){
+        SL_Stop_Time fromTime = getStopTime(from);
+        SL_Stop_Time toTime = getStopTime(to);
+        if(fromTime == null || toTime == null){
+            return false;
+        }
+
+        return fromTime.getSequence() < toTime.getSequence();
+
+    }
+
+    public SL_Stop_Time getStopTime(SL_Stop stop){
+        for(SL_Stop_Time stopTime : stopTimes){
+            if(stopTime.getStop().equals(stop)){
+                return stopTime;
+            }
+        }
+        return null;
     }
 
     public List<SL_Stop_Time> getStopTimes() {
@@ -62,6 +103,10 @@ public class SL_Trip {
     public boolean addStopTime(SL_Stop_Time stopTime) {
         stops.add(stopTime.getStop());
         return stopTimes.add(stopTime);
+    }
+
+    public void sortStopTimes() {
+        stopTimes.sort(null);
     }
 
     public SL_Route getRoute() {

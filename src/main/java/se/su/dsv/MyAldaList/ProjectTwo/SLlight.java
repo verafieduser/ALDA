@@ -144,6 +144,8 @@ public class SLlight {
             System.out.println("Linking graph together took: " + timeTwo);
             System.out.println("Total Import took: " + (timeOne + timeTwo));
         }
+
+
         graph = new Graph(stops);
         in = new Scanner(System.in);
     }

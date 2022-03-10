@@ -54,6 +54,35 @@ public class SL_Route implements Comparable<SL_Route>{
         return intersection;
     }
 
+    //TODO: currently returns trip in the wrong direction!
+    public SL_Trip connectingTrip(SL_Stop from, SL_Stop to, Time earliestTime, boolean timeIsArrivalAtGoal){
+        SL_Trip currentBestTrip = null;
+        Time currentBestStopTime = timeIsArrivalAtGoal ? new Time("24:00:00") : new Time("00:00:00");
+        for(SL_Trip trip : trips){
+
+            List<SL_Stop> tripStops = trip.getStops();
+
+            if(tripStops.contains(from) && tripStops.contains(to) && trip.traversable(from, to)){
+                SL_Stop_Time stopTime = trip.getStopTime(from);
+                Time departureTime = stopTime.getDepartureTime();
+                if  (arrivalByTime(timeIsArrivalAtGoal, earliestTime, departureTime, currentBestStopTime)) {
+                    currentBestStopTime = departureTime;
+                    currentBestTrip = trip;
+                } 
+            }
+        }
+        return currentBestTrip;
+    }
+
+    private boolean arrivalByTime(boolean timeIsArrivalAtGoal, Time earliestTime, Time departureTime, Time currentBestStopTime){
+        if(timeIsArrivalAtGoal){
+            return departureTime.compareTo(earliestTime) >= 0
+            && departureTime.compareTo(currentBestStopTime) < 0;
+        }
+        return departureTime.compareTo(earliestTime) <= 0
+        && departureTime.compareTo(currentBestStopTime) > 0;
+    }
+
     public boolean addTrip(SL_Trip trip){
         return trips.add(trip);
     }

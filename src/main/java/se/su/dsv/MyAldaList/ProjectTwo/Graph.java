@@ -1,6 +1,7 @@
 package se.su.dsv.MyAldaList.ProjectTwo;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -28,43 +29,60 @@ public class Graph {
     public List<Edge> minimumShifts(SL_Stop start, SL_Stop goal, Time earliestTime, boolean timeIsArrivalAtGoal){
         List<Edge> result = new LinkedList<>();
         List<SL_Route> connectingRoutes = findConnectingRoutes(start, goal);
-        //edgecase when there is just one trip!
-        for(int i = 0; i < connectingRoutes.size(); i++){
-            if(i<connectingRoutes.size()-2){
-                Set<SL_Stop> stops = connectingRoutes.get(i).intersectingStops(connectingRoutes.get(i+1));
-                //find trip moving right direction at right time
-                //getNext on the trip until you have reached one of the stops
-                //add each step in between.
-            }
+        List<Edge> path = new LinkedList<>();
+        if(connectingRoutes.size() == 1){
+            SL_Trip trip = connectingRoutes.get(0).connectingTrip(start, goal, earliestTime, timeIsArrivalAtGoal);
+            path = trip.getPath(start, goal);
+            Collections.reverse(path);
+            return path;
         }
-        return null;
+
+        for(int i = 0; i < connectingRoutes.size(); i++){
+            if(i<connectingRoutes.size()-1){
+                Set<SL_Stop> intersectingStops = connectingRoutes.get(i).intersectingStops(connectingRoutes.get(i+1));
+                SL_Stop arbitraryStop = intersectingStops.iterator().next();
+                SL_Trip trip = connectingRoutes.get(i).connectingTrip(start, arbitraryStop, earliestTime, timeIsArrivalAtGoal);
+                path = trip.getPath(start, arbitraryStop);
+                Collections.reverse(path);
+                result.addAll(path);
+                start = arbitraryStop;
+                continue;
+            }
+            SL_Trip trip = connectingRoutes.get(i).connectingTrip(start, goal, earliestTime, timeIsArrivalAtGoal);
+            //TODO: connecting trip returns null?
+            path = trip.getPath(start, goal);
+            Collections.reverse(path);
+            result.addAll(trip.getPath(start, goal));
+        }
+        return result;
     }
 
     private List<SL_Route> findConnectingRoutes(SL_Stop start, SL_Stop goal) {
+        List<SL_Route> result = new LinkedList<>();
+
         Map<SL_Route, Set<SL_Route>> routesToSearchThroughN2 = new HashMap<>();
         Map<SL_Route, Map<SL_Route, Set<SL_Route>>> routesToSearchThroughN3 = new HashMap<>();
+        
         //N
-        for(SL_Route route : start.getRoutes()){
+        for(SL_Route route : start.getRoutes()){ //Gröna linjen, från farsta strand
             if(goal.getRoutes().contains(route)){
-                return new LinkedList<>(Arrays.asList(route));
+                result.add(route);
+                return result;
             }
             routesToSearchThroughN2.put(route, route.intersectingRoutes());
         } 
-        List<SL_Route> result = new LinkedList<>();
         //N^2
         for(Map.Entry<SL_Route, Set<SL_Route>> entry : routesToSearchThroughN2.entrySet()){
+            Map<SL_Route, Set<SL_Route>> routesN3Inner = new HashMap<>();
             for(SL_Route route : entry.getValue()){
                 if(goal.getRoutes().contains(route)){
                     result.add(entry.getKey());
                     result.add(route);
                     return result;
-                }
-                
-                Map<SL_Route, Set<SL_Route>> routesN3Inner = new HashMap<>();
+                } 
                 routesN3Inner.put(route, route.intersectingRoutes());
-                routesToSearchThroughN3.put(entry.getKey(), routesN3Inner);
-
             }
+            routesToSearchThroughN3.put(entry.getKey(), routesN3Inner);
         }
         //N^3
         for(Map.Entry<SL_Route, Map<SL_Route, Set<SL_Route>>> entry : routesToSearchThroughN3.entrySet()){
@@ -201,25 +219,35 @@ public class Graph {
         StringBuilder sb = new StringBuilder();
         Time cost = new Time("0:0:0");
         int shifts = 0;
+        Time timeOnShift = new Time("00:00:00");
         for (int i = path.size() - 1; i >= 0; i--) {
             Edge edge = path.get(i);
-            edge.getTrip();
+            if(i==path.size()-1){
+                sb.append("\nStart with getting on the " + edge.getType() + " towards " + edge.getTrip().getHeadsign());
+            }
             if (i >= 1 && !edge.getTrip().equals(path.get(i - 1).getTrip())) {
                 shifts++;
+                String str = "\nChanged line from one going towards " + path.get(i - 1).getTrip().getHeadsign();
+                str += ", to one going towards " + path.get(i).getTrip().getHeadsign();
+                str += ".\nTime spent on previous line: " + timeOnShift;
+                sb.append(str);
+                timeOnShift = new Time("00:00:00");
             }
-            sb.append("\nFrom:\t"   
+            sb.append("\n\tFrom:\t"   
                         + edge.getFrom().getStop().getName() 
-                        + "\n\t   departs at\t"
+                        + "\n\t\t   departs at\t"
                         + edge.getFrom().getDepartureTime());
-            sb.append("\nTo:\t"     
+            sb.append("\n\tTo:\t"     
                         + edge.getTo().getStop().getName() 
-                        + "\n\t   arrives at\t"
+                        + "\n\t\t   arrives at\t"
                         + edge.getTo().getDepartureTime());
-            sb.append("\tThis step took:" 
-                        + edge.getCost() 
-                        + " and used the " 
-                        + edge.getType());
-            cost = Time.plus(cost, edge.getCost());
+           // sb.append("\tThis step took:" 
+           //             + edge.getCost() 
+           //             + " and used the " 
+           //             + edge.getType());
+           timeOnShift = Time.plus(timeOnShift, edge.getCost());
+           cost = Time.plus(cost, edge.getCost());
+
         }
         sb.append("\nTotal time taken: " + cost);
         sb.append(" and changed mode of transport " + shifts + " times");
