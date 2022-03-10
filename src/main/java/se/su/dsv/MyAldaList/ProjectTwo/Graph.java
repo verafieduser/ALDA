@@ -1,8 +1,11 @@
 package se.su.dsv.MyAldaList.ProjectTwo;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Scanner;
@@ -22,10 +25,58 @@ public class Graph {
         this.nodes = new HashSet<>(nodes);
     }
 
-    public SL_Stop findNode(String query) {
-        for(SL_Stop stop : nodes){
-            if(stop.getName().equalsIgnoreCase(query)){
-                return stop;
+    public List<Edge> minimumShifts(SL_Stop start, SL_Stop goal, Time earliestTime, boolean timeIsArrivalAtGoal){
+        List<Edge> result = new LinkedList<>();
+        List<SL_Route> connectingRoutes = findConnectingRoutes(start, goal);
+        //edgecase when there is just one trip!
+        for(int i = 0; i < connectingRoutes.size(); i++){
+            if(i<connectingRoutes.size()-2){
+                Set<SL_Stop> stops = connectingRoutes.get(i).intersectingStops(connectingRoutes.get(i+1));
+                //find trip moving right direction at right time
+                //getNext on the trip until you have reached one of the stops
+                //add each step in between.
+            }
+        }
+        return null;
+    }
+
+    private List<SL_Route> findConnectingRoutes(SL_Stop start, SL_Stop goal) {
+        Map<SL_Route, Set<SL_Route>> routesToSearchThroughN2 = new HashMap<>();
+        Map<SL_Route, Map<SL_Route, Set<SL_Route>>> routesToSearchThroughN3 = new HashMap<>();
+        //N
+        for(SL_Route route : start.getRoutes()){
+            if(goal.getRoutes().contains(route)){
+                return new LinkedList<>(Arrays.asList(route));
+            }
+            routesToSearchThroughN2.put(route, route.intersectingRoutes());
+        } 
+        List<SL_Route> result = new LinkedList<>();
+        //N^2
+        for(Map.Entry<SL_Route, Set<SL_Route>> entry : routesToSearchThroughN2.entrySet()){
+            for(SL_Route route : entry.getValue()){
+                if(goal.getRoutes().contains(route)){
+                    result.add(entry.getKey());
+                    result.add(route);
+                    return result;
+                }
+                
+                Map<SL_Route, Set<SL_Route>> routesN3Inner = new HashMap<>();
+                routesN3Inner.put(route, route.intersectingRoutes());
+                routesToSearchThroughN3.put(entry.getKey(), routesN3Inner);
+
+            }
+        }
+        //N^3
+        for(Map.Entry<SL_Route, Map<SL_Route, Set<SL_Route>>> entry : routesToSearchThroughN3.entrySet()){
+            for(Map.Entry<SL_Route, Set<SL_Route>> entry2 : entry.getValue().entrySet()){
+                for(SL_Route route : entry2.getValue()){
+                    if(goal.getRoutes().contains(route)){
+                        result.add(entry.getKey());
+                        result.add(entry2.getKey());
+                        result.add(route);
+                        return result;
+                    }
+                }
             }
         }
         return null;
@@ -151,12 +202,10 @@ public class Graph {
         Time cost = new Time("0:0:0");
         int shifts = 0;
         for (int i = path.size() - 1; i >= 0; i--) {
-            System.out.println(i);
             Edge edge = path.get(i);
             edge.getTrip();
             if (i >= 1 && !edge.getTrip().equals(path.get(i - 1).getTrip())) {
                 shifts++;
-                System.out.println(i);
             }
             sb.append("\nFrom:\t"   
                         + edge.getFrom().getStop().getName() 
@@ -177,6 +226,15 @@ public class Graph {
         sb.append("\nPassed a total of " + (path.size()+1) + " stations!");
 
         return sb.toString();
+    }
+
+    public SL_Stop findNode(String query) {
+        for(SL_Stop stop : nodes){
+            if(stop.getName().toLowerCase().equals(query.toLowerCase())){
+                return stop;
+            }
+        }
+        return null;
     }
 
 

@@ -30,7 +30,7 @@ public class SL_Trip {
 
     public Edge getNext(SL_Stop currentStop) {
         SL_Stop_Time from = null;
-        SL_Stop_Time to = null;
+        SL_Stop_Time to = null; 
 
         for(SL_Stop_Time stopTime : stopTimes){
             if(stopTime.getStop().equals(currentStop)){
