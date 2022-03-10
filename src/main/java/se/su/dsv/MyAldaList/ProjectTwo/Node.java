@@ -1,37 +1,25 @@
 package se.su.dsv.MyAldaList.ProjectTwo;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class Node implements Comparable<Node>{
 
     private final SL_Stop stop;
-    private final int currentRouteScore;
-    private final int distanceToGoalScore;
-    private final Node previous;
+    private final List<Edge> edges = new LinkedList<>();
+    private Time currentRouteScore;
+    private double distanceToGoalScore;
+    private SL_Stop previous;
 
-    //private final List<Edge> edges = new LinkedList<>();
 
-    public Node(SL_Stop stop, int currentRouteScore, int distanceToGoalScore, Node previous) {
+    public Node(int id, SL_Stop stop) {
         this.stop = stop;
-        this.currentRouteScore = currentRouteScore;
-        this.distanceToGoalScore = distanceToGoalScore;
-        this.previous = previous;
+        this.currentRouteScore = new Time("99:00:00");
     }
 
     public SL_Stop getStop() {
         return stop;
     }
-
-    public int getCurrentRouteScore() {
-        return this.currentRouteScore;
-    }
-
-    public int getDistanceToGoalScore() {
-        return this.distanceToGoalScore;
-    }
-
-    public Node getPrevious() {
-        return this.previous;
-    }
-
 
     @Override
     public boolean equals(Object o) {

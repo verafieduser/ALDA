@@ -159,6 +159,11 @@ public class SL_Stop implements Comparable<SL_Stop> {
         return sb.toString();
     }
 
+    public void clear(){
+        currentRouteScore = new Time("99:00:00");
+        distanceToGoalScore = Double.POSITIVE_INFINITY;
+    }
+
     public double[] getLatlon() {
         return latlon;
     }

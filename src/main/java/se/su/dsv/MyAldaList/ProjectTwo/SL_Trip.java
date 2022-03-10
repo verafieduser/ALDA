@@ -66,23 +66,29 @@ public class SL_Trip {
         int fromSeq = from.getSequence();
         int toSeq = to.getSequence();
 
-        for(int i = fromSeq-1; i <= toSeq-2; i++){
-            path.add(0, new Edge(stopTimes.get(i), stopTimes.get(i+1), route.getType()));
+        for(int i = fromSeq; i <= toSeq-2; i++){
+            path.add(0, new Edge(stopTimes.get(i), stopTimes.get(i).getNext(), route.getType()));
         }
         return path;
     }
 
+    /**
+     * Determines whether it is possible to go from a station to another on this trip.
+     * @param from is a station
+     * @param to is another station
+     * @return true if both are on the same trip, and to is later than from.
+     */
     public boolean traversable(SL_Stop from, SL_Stop to){
         SL_Stop_Time fromTime = getStopTime(from);
         SL_Stop_Time toTime = getStopTime(to);
         if(fromTime == null || toTime == null){
             return false;
         }
-
-        return fromTime.getSequence() < toTime.getSequence();
+        return fromTime.getDepartureTime().compareTo(toTime.getDepartureTime()) < 0;
 
     }
 
+    
     public SL_Stop_Time getStopTime(SL_Stop stop){
         for(SL_Stop_Time stopTime : stopTimes){
             if(stopTime.getStop().equals(stop)){
@@ -101,6 +107,9 @@ public class SL_Trip {
     }
 
     public boolean addStopTime(SL_Stop_Time stopTime) {
+        if(!stopTimes.isEmpty()){
+            stopTimes.get(stopTimes.size()-1).setNext(stopTime);
+        }
         stops.add(stopTime.getStop());
         return stopTimes.add(stopTime);
     }

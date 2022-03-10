@@ -3,7 +3,6 @@ package se.su.dsv.MyAldaList.ProjectTwo;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,7 +42,16 @@ import java.util.Set;
  * flera av samma färdmedel kanske?
  * 
  */
-
+/**class that central to this project. Is used to initialize 
+ * and linking data from the CSV provided, and then modifier futher by me. 
+ * It also handles user interfacing.
+ * 
+ * It has containers for the data from the CSV, but are mostly used to
+ * build the data into the graph it represents. All access to the graph
+ * goes through the Graph class, which is constructed from SLlight with 
+ * the SL_Stops from the CSV as backbone. 
+ * 
+ */
 public class SLlight {
 
     Graph graph;
@@ -67,7 +75,7 @@ public class SLlight {
         in.close();
     }
 
-    public void queryUser() {
+    private void queryUser() {
         do {
             SL_Stop[] fromAndTo = queryUserAboutTrip();
             SL_Stop from = fromAndTo[0];
@@ -89,20 +97,20 @@ public class SLlight {
         //in.close();
     }
 
-    public SL_Stop[] queryUserAboutTrip() {
+    private SL_Stop[] queryUserAboutTrip() {
         String errorMessage = "Station could not be found. Try again";
         SL_Stop from = findNode("Going from : ", errorMessage);
         SL_Stop to = findNode("Going to: ", errorMessage);
         return new SL_Stop[] { from, to };
     }
 
-    public boolean queryUserAboutTime() {
+    private boolean queryUserAboutTime() {
         System.out.print("Do you want to have an answer by departure time, or arrival time?");
         String answer = in.nextLine();
         return answer.equalsIgnoreCase("arrival") ? true : false;
     }
 
-    public Time queryUserAboutWhen() {
+    private Time queryUserAboutWhen() {
         System.out.print("Enter time in format \"xx:xx:xx\": ");
         String answer = in.nextLine();
         return new Time(answer);
@@ -112,13 +120,25 @@ public class SLlight {
         System.out.print(information);
         String query = in.nextLine(); 
         System.out.println(query);
-        SL_Stop result = graph.findNode(query);
+        SL_Stop result = findNode(query);
         while (result == null) {
             System.out.println(errorMessage);
             System.out.print(information);
-            result = graph.findNode(in.nextLine());
+            result = findNode(in.nextLine());
         }
         return result;
+    }
+
+    public SL_Stop findNode(String name){
+        return graph.findNode(name);
+    }
+    
+    public List<Edge> findPath(SL_Stop from, SL_Stop to, Time time, boolean timeIsArrivalAtGoal, boolean astar){
+        if(astar){
+            return graph.aStar(from, to, time, timeIsArrivalAtGoal);
+        }
+        return graph.minimumShifts(from, to, time, timeIsArrivalAtGoal);
+       
     }
 
     public void initializeData(boolean withTimePrints) {
