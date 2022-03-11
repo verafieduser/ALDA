@@ -28,18 +28,20 @@ public class Graph {
 
     /**
      * Creates a graph with the nodes specified.
+     * 
      * @param nodes for full functionality, the data already needs to be fully
-     * connected by the SLlight-class. 
+     *              connected by the SLlight-class.
      */
     public Graph(List<Station> nodes) {
         this.nodes = new HashSet<>(nodes);
     }
 
     /**
-    * Creates a graph with the nodes specified.
-    * @param nodes for full functionality, the data already needs to be fully
-    * connected by the SLlight-class. 
-    */
+     * Creates a graph with the nodes specified.
+     * 
+     * @param nodes for full functionality, the data already needs to be fully
+     *              connected by the SLlight-class.
+     */
     public Graph(Set<Station> nodes) {
         this.nodes = new HashSet<>(nodes);
     }
@@ -47,10 +49,11 @@ public class Graph {
     /**
      * Method for finding neighbouring nodes from a stop, and then assign
      * a cost to them according to the A* algorithm.
+     * 
      * @param current stop that you want to find neighbours to.
-     * @param goal station to calculate distance to for the A* algorithm.
+     * @param goal    station to calculate distance to for the A* algorithm.
      * @return a list of stops that neighbours param current, with costs
-     * added for the path taken so far.
+     *         added for the path taken so far.
      */
     public List<Station> addNeighbouringNodes(Station current, Station goal) {
         List<Station> neighbours = new LinkedList<>();
@@ -72,13 +75,14 @@ public class Graph {
 
     /**
      * Algorithm for calculating the distance between two map coordinates,
-     * that is, two points with longitude and latitude. 
+     * that is, two points with longitude and latitude.
      * 
      * Works by finding the angle between the points, and projects
-     * it upon the sphere with a radius the same as earth. 
+     * it upon the sphere with a radius the same as earth.
      * 
-     * Based on algorithm found at: 
+     * Based on algorithm found at:
      * http://www.movable-type.co.uk/scripts/latlong.html
+     * 
      * @param from
      * @param to
      * @return
@@ -104,12 +108,13 @@ public class Graph {
     }
 
     /**
-     * Searches for a station in the list of nodes based on 
-     * text string acquired. 
+     * Searches for a station in the list of nodes based on
+     * text string acquired.
+     * 
      * @param query containing the name of the station you are searching for.
-     * case insensitive.
-     * @return the node found with the same name as the param query string content. 
-     * Returns null if none was found.
+     *              case insensitive.
+     * @return the node found with the same name as the param query string content.
+     *         Returns null if none was found.
      */
     public Station findNode(String query) {
         for (Station stop : nodes) {

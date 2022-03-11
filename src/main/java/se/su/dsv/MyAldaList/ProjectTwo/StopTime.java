@@ -4,7 +4,8 @@
 package se.su.dsv.MyAldaList.ProjectTwo;
 
 /**
- * Class for departures from a station, on a specific route. Is what is traversed in edges for
+ * Class for departures from a station, on a specific route. Is what is
+ * traversed in edges for
  * pathfinding.
  */
 public class StopTime implements Comparable<StopTime> {
@@ -17,7 +18,7 @@ public class StopTime implements Comparable<StopTime> {
      */
     private Time time;
     /**
-     * The station this station occurs at 
+     * The station this station occurs at
      */
     private Station station;
     /**
@@ -27,10 +28,11 @@ public class StopTime implements Comparable<StopTime> {
 
     /**
      * Constructs a station time
-     * @param trip the trip the station time is on
+     * 
+     * @param trip           the trip the station time is on
      * @param departure_time the time the trip is on this station
-     * @param station the station this station occurs at
-     * @param stop_sequence the number it is at on the trip
+     * @param station        the station this station occurs at
+     * @param stop_sequence  the number it is at on the trip
      */
     public StopTime(Trip trip, String departure_time, Station station, short stop_sequence) {
         this.trip = trip;
