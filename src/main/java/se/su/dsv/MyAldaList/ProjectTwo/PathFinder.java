@@ -41,9 +41,9 @@ public class PathFinder {
      *                            instead: depart at param time (false)
      * @return a list of edges connecting the two stations
      */
-    public List<Edge> minimumShifts(SLStop start, SLStop goal, Time time, boolean timeIsArrivalAtGoal) {
+    public List<Edge> minimumShifts(Station start, Station goal, Time time, boolean timeIsArrivalAtGoal) {
         List<Edge> result = new LinkedList<>();
-        List<SLRoute> connectingRoutes = findConnectingRoutes(start, goal);
+        List<Route> connectingRoutes = findConnectingRoutes(start, goal);
 
         if (connectingRoutes == null || connectingRoutes.isEmpty()) {
             System.out.println("Oops! Something went wrong");
@@ -52,19 +52,19 @@ public class PathFinder {
 
         // edge case for when there is only one route:
         if (connectingRoutes.size() == 1) {
-            SLTrip trip = connectingRoutes.get(0).connectingTrip(start, goal, time, timeIsArrivalAtGoal);
+            Trip trip = connectingRoutes.get(0).connectingTrip(start, goal, time, timeIsArrivalAtGoal);
             return trip.getPath(start, goal);
         }
 
         for (int i = 0; i < connectingRoutes.size() - 1; i++) {
 
             // finds the stops that intersect two routes:
-            Set<SLStop> intersectingStops = connectingRoutes.get(i).intersectingStops(connectingRoutes.get(i + 1));
+            Set<Station> intersectingStops = connectingRoutes.get(i).intersectingStops(connectingRoutes.get(i + 1));
             // chooses one of those stops arbitrarily:
-            SLStop arbitraryStop = intersectingStops.iterator().next();
+            Station arbitraryStop = intersectingStops.iterator().next();
             // Finds a trip at a relevant time that connects from where
             // we currently are, to the intersecting stop:
-            SLTrip trip = connectingRoutes.get(i).connectingTrip(start, arbitraryStop, time,
+            Trip trip = connectingRoutes.get(i).connectingTrip(start, arbitraryStop, time,
                     timeIsArrivalAtGoal);
             // TODO: clock is currently only earliest departure! never latest arrival!
             time = timeIsArrivalAtGoal ? trip.getStopTime(start).getDepartureTime()
@@ -76,7 +76,7 @@ public class PathFinder {
             start = arbitraryStop;
 
         }
-        SLTrip trip = connectingRoutes.get(connectingRoutes.size() - 1).connectingTrip(start, goal, time,
+        Trip trip = connectingRoutes.get(connectingRoutes.size() - 1).connectingTrip(start, goal, time,
                 timeIsArrivalAtGoal);
         result.addAll(0, trip.getPath(start, goal));
         return result;
@@ -90,21 +90,21 @@ public class PathFinder {
      * @return a list of routes that connect the two stations, min size=1, max
      *         size=3.
      */
-    private List<SLRoute> findConnectingRoutes(SLStop start, SLStop goal) {
-        List<SLRoute> result = new LinkedList<>();
+    private List<Route> findConnectingRoutes(Station start, Station goal) {
+        List<Route> result = new LinkedList<>();
 
-        for (SLRoute route : start.getRoutes()) {
+        for (Route route : start.getRoutes()) {
             if (goal.getRoutes().contains(route)) {
                 result.add(route);
                 return result;
             }
-            for (SLRoute route2 : route.intersectingRoutes()) {
+            for (Route route2 : route.intersectingRoutes()) {
                 if (goal.getRoutes().contains(route2)) {
                     result.add(route);
                     result.add(route2);
                     return result;
                 }
-                for (SLRoute route3 : route2.intersectingRoutes()) {
+                for (Route route3 : route2.intersectingRoutes()) {
                     if (goal.getRoutes().contains(route3)) {
                         result.add(route);
                         result.add(route2);
@@ -135,21 +135,21 @@ public class PathFinder {
      *                            start(false).
      * @return a list of edges that connect start and goal at times specified.
      */
-    public List<Edge> aStar(SLStop start, SLStop goal, Time time, boolean timeIsArrivalAtGoal) {
+    public List<Edge> aStar(Station start, Station goal, Time time, boolean timeIsArrivalAtGoal) {
         if (start.equals(goal)) {
             System.out.println("No trip required because you are already at destination!");
             return null;
         }
-        Queue<SLStop> foundNodes = new PriorityQueue<>();
+        Queue<Station> foundNodes = new PriorityQueue<>();
         start.setCurrentRouteScore(new Time("0:0:0"));
         start.setDistanceToGoalScore(graph.calculateDistance(start, goal));
         foundNodes.add(start);
         return aStarRecursivePart(foundNodes, goal, time, timeIsArrivalAtGoal);
     }
 
-    private List<Edge> aStarRecursivePart(Queue<SLStop> foundNodes, SLStop goal, Time time,
+    private List<Edge> aStarRecursivePart(Queue<Station> foundNodes, Station goal, Time time,
             boolean timeIsArrivalAtGoal) {
-        SLStop current = foundNodes.poll(); // chooses the one with lowest estimated score
+        Station current = foundNodes.poll(); // chooses the one with lowest estimated score
         if (current.equals(goal)) {
             System.out.println("Found path!");
             return pathCollection(goal, time, timeIsArrivalAtGoal);
@@ -176,10 +176,10 @@ public class PathFinder {
      *                            start(false).
      * @return a list of edges that connect start and goal at times specified.
      */
-    private List<Edge> pathCollection(SLStop goal, Time time, boolean timeIsArrivalAtGoal) {
+    private List<Edge> pathCollection(Station goal, Time time, boolean timeIsArrivalAtGoal) {
         LinkedList<Edge> path = new LinkedList<>();
         while (!timeIsArrivalAtGoal && goal.getPrevious() != null) {
-            SLStop previous = goal.getPrevious();
+            Station previous = goal.getPrevious();
 
             Time newTime = Time.plus(time, previous.getCurrentRouteScore());
             path.add(previous.edgeAtEarliestTime(newTime, goal));
@@ -190,7 +190,7 @@ public class PathFinder {
             }
         }
 
-        SLStop previous = goal.getPrevious();
+        Station previous = goal.getPrevious();
         path.add(previous.edgeAtLatestTime(time, goal));
         goal = previous;
         while (goal.getPrevious() != null) {
@@ -225,11 +225,11 @@ public class PathFinder {
                 timeOnShift = new Time("00:00:00");
             }
             sb.append("\n\tFrom:\t"
-                    + edge.getFrom().getStop().getName()
+                    + edge.getFrom().getStation().getName()
                     + "\n\t\t   departs at\t"
                     + edge.getFrom().getDepartureTime());
             sb.append("\n\tTo:\t"
-                    + edge.getTo().getStop().getName()
+                    + edge.getTo().getStation().getName()
                     + "\n\t\t   arrives at\t"
                     + edge.getTo().getDepartureTime());
             timeOnShift = Time.plus(timeOnShift, edge.getCost());

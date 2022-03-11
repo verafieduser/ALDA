@@ -24,73 +24,61 @@ import java.util.Set;
 //TODO: tror det har att göra med slutstationer!
 
 /**
- * Heuristic:
- * 1: Kolla att någon av de routes i start finns i routes i end. Spara alla dom
- * routes:
- * För varje sådan Route, ge den ett värde baserat på färdmedel -
- * metro>tramway>bus
- * Kolla när den med högst värde går. om det är långt till avgångstid, jämför
- * med den med näst högst värde, e.t.c.
- * Returnera bästa värdet du fick, och vilken väg det var
- * 
- * 2: Om de inte delar någon route...:
- * Ta en station i taget åt vardera håll (om bägge finns) med bästa färdmedel.
- * Utför steg 1 på den.
- * - Steg 1 på nuvarande station.
- * Gör ovan steg 3 gånger, om fortfarande inget - kolla en station på näst bästa
- * färdmedel om något finns.
- * 
- * Kör till man hittat tre vägar, föreslå alla dom i snabbhetsordning?
- * 
- * Använd koordinater för att lista ut riktning? Är det vad man gör om det finns
- * flera av samma färdmedel kanske?
- * 
- */
-/**class that central to this project. Is used to initialize 
- * and linking data from the CSV provided, and then modifier futher by me. 
+ * class that central to this project. Is used to initialize
+ * and linking data from the CSV provided, and then modifier futher by me.
  * It also handles user interfacing.
  * 
  * It has containers for the data from the CSV, but are mostly used to
  * build the data into the graph it represents. All access to the graph
- * goes through the Graph class, which is constructed from SLlight with 
- * the SL_Stops from the CSV as backbone. 
+ * goes through the Graph class, which is constructed from SLlight with
+ * the SL_Stops from the CSV as backbone.
  * 
  */
-public class SLlight {
+public class SLLight {
 
     Graph graph;
     PathFinder pathfinder;
     Scanner in;
-    //PrintStream out = new PrintStream(System.out, true, "UTF-8");
 
-    Set<SLStop> stops = new HashSet<>();
-    List<SLStopTime> stopTimes = new ArrayList<>();
-    List<SLRoute> routes = new LinkedList<>();
-    List<SLTrip> trips = new LinkedList<>();
+    Set<Station> stops = new HashSet<>();
+    List<StopTime> stopTimes = new ArrayList<>();
+    List<Route> routes = new LinkedList<>();
+    List<Trip> trips = new LinkedList<>();
 
     public static void main(String[] args) {
-        SLlight sl = new SLlight();
-        sl.initializeData(true);
-        //sl.tests();
+        SLLight sl = new SLLight();
+        sl.initializeData(true, false);
         sl.queryUser();
         sl.close();
     }
 
-    public void close(){
+    /**
+     * Closes the scanner, to be called before program completion.
+     */
+    public void close() {
         in.close();
     }
 
-    private void queryUser() {
+    /**
+     * Method for interfacing with pathfinding, by locating stations for start/end
+     * of path,
+     * if user wants result by arrive at time, or depart at time, and which time
+     * user wants that to be at.
+     * lastly, asks user if they want to use A* algorithm, or the algorithm for
+     * finding a path with a minimum
+     * amount of changes of modes of transport.
+     */
+    public void queryUser() {
         do {
-            SLStop[] fromAndTo = queryUserAboutTrip();
-            SLStop from = fromAndTo[0];
-            SLStop to = fromAndTo[1];
+            Station[] fromAndTo = queryUserAboutTrip();
+            Station from = fromAndTo[0];
+            Station to = fromAndTo[1];
             boolean resultByArrival = queryUserAboutTime();
             Time t = queryUserAboutWhen();
             System.out.println("Going from: " + from.getName() + " to: " + to.getName());
             System.out.print("Do you want to find a trip with a minimum amount of shifts? y/n: ");
             List<Edge> path;
-            if(in.nextLine().equalsIgnoreCase("y")){
+            if (in.nextLine().equalsIgnoreCase("y")) {
                 path = pathfinder.minimumShifts(from, to, t, resultByArrival);
             } else {
                 path = pathfinder.aStar(from, to, t, resultByArrival);
@@ -98,34 +86,59 @@ public class SLlight {
             System.out.println(pathfinder.printPath(path));
             System.out.print("Press enter for another trip: ");
         } while ((in.nextLine().equalsIgnoreCase("")));
-
-        //in.close();
     }
 
-    private SLStop[] queryUserAboutTrip() {
+    /**
+     * Helper method for queryUser(). Locates stations based on inputted string.
+     * 
+     * @return an array with the length of 2, containing i0=the station the user
+     *         wants to depart from,
+     *         and i1= the station the user wants to arrive at.
+     */
+    private Station[] queryUserAboutTrip() {
         String errorMessage = "Station could not be found. Try again";
-        SLStop from = findNode("Going from : ", errorMessage);
-        SLStop to = findNode("Going to: ", errorMessage);
-        return new SLStop[] { from, to };
+        Station from = findNode("Going from : ", errorMessage);
+        Station to = findNode("Going to: ", errorMessage);
+        return new Station[] { from, to };
     }
 
+    /**
+     * Helper method for queryUser().
+     * 
+     * @return a boolean representing if the user wants a result where they arrive
+     *         at specified time, or one in which
+     *         they depart at specified time.
+     */
     private boolean queryUserAboutTime() {
-        System.out.print("Do you want to have an answer by departure time, or arrival time?");
+        System.out.print("Enter which you prefer: An answer in which time determines arrival at goal(1), "
+                + "or an answer in which time determines departure from start(2)");
         String answer = in.nextLine();
-        return answer.equalsIgnoreCase("arrival") ? true : false;
+        return answer.equalsIgnoreCase("1");
     }
 
+    /**
+     * Helper method for queryUser()
+     * 
+     * @return a time the user wants their trip based upon
+     */
     private Time queryUserAboutWhen() {
         System.out.print("Enter time in format \"xx:xx:xx\": ");
         String answer = in.nextLine();
         return new Time(answer);
     }
 
-    private SLStop findNode(String information, String errorMessage) {
+    /**
+     * Helper method for queryUser().
+     * 
+     * @param information  information to be displayed before user query.
+     * @param errorMessage error message to be displayed if no station was found.
+     * @return a station with name matching with string the user inputed.
+     */
+    private Station findNode(String information, String errorMessage) {
         System.out.print(information);
-        String query = in.nextLine(); 
+        String query = in.nextLine();
         System.out.println(query);
-        SLStop result = findNode(query);
+        Station result = findNode(query);
         while (result == null) {
             System.out.println(errorMessage);
             System.out.print(information);
@@ -134,19 +147,51 @@ public class SLlight {
         return result;
     }
 
-    public SLStop findNode(String name){
+    /**
+     * Method to make node finding possible to do from outside of this class, if
+     * you'd want to do that.
+     * 
+     * @param name the name of the station you want to find
+     * @return a station with the same name as the param name. If none was found,
+     *         null is returned.
+     */
+    public Station findNode(String name) {
         return graph.findNode(name);
     }
-    
-    public List<Edge> findPath(SLStop from, SLStop to, Time time, boolean timeIsArrivalAtGoal, boolean astar){
-        if(astar){
+
+    /**
+     * Method to initialize pathfinding.
+     * 
+     * @param from                the station you want to depart from.
+     * @param to                  the station you want to arrive at.
+     * @param time                the time you want the trip to be at.
+     * @param timeIsArrivalAtGoal whether the time specifies arrival at "to", or
+     *                            departure from "from".
+     * @param astar               determines whether it uses the A*algorithm, or the
+     *                            minimum shifts one.
+     * @return a list of edges connecting "from" with "to". Returns null if none was
+     *         found.
+     */
+    public List<Edge> findPath(Station from, Station to, Time time, boolean timeIsArrivalAtGoal, boolean astar) {
+        if (astar) {
             return pathfinder.aStar(from, to, time, timeIsArrivalAtGoal);
         }
         return pathfinder.minimumShifts(from, to, time, timeIsArrivalAtGoal);
-       
+
     }
 
-    public void initializeData(boolean withTimePrints) {
+    /**
+     * Initializes data by importing it from the CSV, and then linking it together,
+     * and then using
+     * this data to create the graph class, and the pathfinder-class.
+     * 
+     * @param withTimePrints true if you want terminal prints that specifies the
+     *                       time taken for importing
+     *                       from the csv, and the linking of data.
+     * @param withTests      true if you want tests specified in method "tests()" to
+     *                       be run.
+     */
+    public void initializeData(boolean withTimePrints, boolean withTests) {
         long startTimeOne = System.currentTimeMillis();
         importCSV("sl_routes");
 
@@ -162,7 +207,6 @@ public class SLlight {
         long startTimeTwo = System.currentTimeMillis();
         addTripsToRoutes();
         addTripsToStops();
-        addEdgesToStops();
         long endTimeTwo = System.currentTimeMillis();
         long timeTwo = endTimeTwo - startTimeTwo;
         if (withTimePrints) {
@@ -170,12 +214,17 @@ public class SLlight {
             System.out.println("Total Import took: " + (timeOne + timeTwo));
         }
 
-
         graph = new Graph(stops);
         pathfinder = new PathFinder(graph);
         in = new Scanner(System.in);
+        if (withTests) {
+            tests();
+        }
     }
 
+    /**
+     * @return the graph object within this class.
+     */
     public Graph getGraph() {
         return graph;
     }
@@ -192,7 +241,8 @@ public class SLlight {
      */
     private void importCSV(String fileName) {
         try (
-                FileReader fileReader = new FileReader("src\\test\\resources\\sl_gtfs_data\\" + fileName + ".txt", StandardCharsets.UTF_8);
+                FileReader fileReader = new FileReader("src\\test\\resources\\sl_gtfs_data\\" + fileName + ".txt",
+                        StandardCharsets.UTF_8);
                 BufferedReader bufferedReader = new BufferedReader(fileReader);) {
             String line = bufferedReader.readLine();
             while ((line = bufferedReader.readLine()) != null) {
@@ -223,26 +273,48 @@ public class SLlight {
         }
     }
 
+    /**
+     * Adds stop to list of stops.
+     * 
+     * @param lines a CSV-line containing the data for a stop, where i0=stopId,
+     *              i1=latitude, i3=longitude.
+     */
     private void addStop(String[] lines) {
         int stopId = Integer.parseInt(lines[0].substring(4));
         String stopName = lines[1];
         double stopLat = Double.parseDouble(lines[2]);
         double stopLon = Double.parseDouble(lines[3]);
-        stops.add(new SLStop(stopId, stopName, stopLat, stopLon));
+        stops.add(new Station(stopId, stopName, stopLat, stopLon));
     }
 
+    /**
+     * Adds a route to list of routes.
+     * 
+     * @param lines a CSV-line containing the data for a route, where i0=routeId,
+     *              and unique identifier,
+     *              i2=the routes number, i3=the type the route is (ie, bus, metro,
+     *              tramway)
+     */
     private void addRoute(String[] lines) {
         int routeId = Integer.parseInt(lines[0].substring(6));
         short routeShortName = Short.parseShort(lines[2]);
         // String route_long_name = lines[3];
         short routeType = Short.parseShort(lines[3]);
-        routes.add(new SLRoute(routeId, routeShortName, routeType));
+        routes.add(new Route(routeId, routeShortName, routeType));
     }
 
+    /**
+     * Adds a trip to list of trips.
+     * 
+     * @param lines a CSV-line containing the data for a trip, where i0=routeId, for
+     *              linking the trip to the route it is on,
+     *              i2=tripId, the unique identifier for the trip. i3=the headsign
+     *              of the trip, that is, the end station it is going towards.
+     */
     private void addTrip(String[] lines) {
         int routeId = Integer.parseInt(lines[0].substring(6));
-        SLRoute line = null;
-        for (SLRoute route : routes) {
+        Route line = null;
+        for (Route route : routes) {
             if (route.getId() == routeId) {
                 line = route;
             }
@@ -250,17 +322,29 @@ public class SLlight {
 
         int tripId = Integer.parseInt(lines[2].substring(6));
         String tripHeadsign = lines[3];
-        trips.add(new SLTrip(line, tripId, tripHeadsign)); // add dependency!!!
+        trips.add(new Trip(line, tripId, tripHeadsign)); // add dependency!!!
     }
 
+    /**
+     * Adds a stoptime to the list of stoptimes. A stop time is a specific departure
+     * on a trip, from a stop.
+     * 
+     * @param lines i0=the id of the trip it is on, i1 and i2 are
+     *              departure/arrivaltimes, which are always
+     *              identical in this system. But because some final stops dont have
+     *              a departure time, but only an arrival time -
+     *              I add both to the same variable, "departureTime". i3=stopId, the
+     *              id of the stop it is on. i4=stopSequence, the
+     *              number of which stop it is on the trip.
+     */
     private void addStopTime(String[] lines) {
         String departureTime = lines[2];
-        if(departureTime.isBlank()){
+        if (departureTime.isBlank()) {
             departureTime = lines[1];
         }
         int stopId = Integer.parseInt(lines[3].substring(4));
-        SLStop location = null;
-        for (SLStop stop : stops) {
+        Station location = null;
+        for (Station stop : stops) {
             if (stop.getId() == stopId) {
                 location = stop;
                 break;
@@ -269,11 +353,11 @@ public class SLlight {
         short stopSequence = Short.parseShort(lines[4]);
 
         int tripId = Integer.parseInt(lines[0].substring(6));
-        SLTrip tripStop = null;
-        for (SLTrip trip : trips) {
+        Trip tripStop = null;
+        for (Trip trip : trips) {
             if (trip.getId() == tripId) {
                 tripStop = trip;
-                SLStopTime stopTime = new SLStopTime(tripStop, departureTime, location, stopSequence);
+                StopTime stopTime = new StopTime(tripStop, departureTime, location, stopSequence);
                 trip.addStopTime(stopTime);
                 stopTimes.add(stopTime);
                 break;
@@ -281,12 +365,16 @@ public class SLlight {
         }
     }
 
+    /**
+     * Links together trips and routes, by adding each trip that is on a specific
+     * route, onto that route.
+     */
     private void addTripsToRoutes() {
-        for (SLRoute route : routes) {
-            for (SLTrip trip : trips) {
+        for (Route route : routes) {
+            for (Trip trip : trips) {
                 if (trip.getRoute().equals(route)) {
                     route.addTrip(trip);
-                    for (SLStop stop : trip.getStops()) {
+                    for (Station stop : trip.getStops()) {
                         route.addStop(stop);
                     }
                 }
@@ -294,9 +382,12 @@ public class SLlight {
         }
     }
 
+    /**
+     * Adds the trips which goes past a stop, to that stop.
+     */
     public void addTripsToStops() {
-        for (SLStop stop : stops) {
-            for (SLTrip trip : trips) {
+        for (Station stop : stops) {
+            for (Trip trip : trips) {
                 if (trip.getStops().contains(stop)) {
                     stop.addConnection(trip);
                 }
@@ -304,24 +395,23 @@ public class SLlight {
         }
     }
 
-    private void addEdgesToStops() {
-        for (SLStop stop : stops) {
-            stop.addEdges();
-        }
-
-    }
-
+    /**
+     * Method in which you can put tests for the app.
+     */
     public void tests() {
         testMaxShifts();
-        graph = new Graph(stops);
-        SLStop from = graph.findNode("Jarlaberg");
-        SLStop to = graph.findNode("Stockholm Sickla Kaj");
-        String result = pathfinder.printPath(pathfinder.aStar(from, to, new Time("14:21:00"), false));
-        System.out.println(result);
     }
 
+    /**
+     * Method that finds the max amount of shifts necessary to get from any station
+     * to another within the graph.
+     * Having run this, the max amount seems to be 3. This is helpful for for
+     * example the minimum shifts method in
+     * the pathfinder class, because it guarantees the result is at worst O(n^3)
+     * time complexity.
+     */
     private void testMaxShifts() {
-        List<SLStop> stopsAsList = new ArrayList<>(stops);
+        List<Station> stopsAsList = new ArrayList<>(stops);
         int maxShifts = 0;
         for (int i = 0; i < stops.size(); i++) {
             for (int j = i + 1; j < stops.size(); j++) {
@@ -332,19 +422,26 @@ public class SLlight {
         System.out.println("Max amounts of shifts in SL is: " + maxShifts);
     }
 
-    private int routesInCommon(SLStop i, SLStop j) {
+    /**
+     * Helper method for the testMaxShifts method.
+     * 
+     * @param i a station
+     * @param j another station
+     * @return the amount of routes necessary to cross station i to station j
+     */
+    private int routesInCommon(Station i, Station j) {
         int steps = 1;
-        List<SLRoute> routes = new ArrayList<>();
-        for (SLRoute route : i.getRoutes()) {
+        List<Route> routesInCommon = new ArrayList<>();
+        for (Route route : i.getRoutes()) {
             if (j.getRoutes().contains(route)) {
                 return steps;
             }
             routes.add(route);
         }
         while (true) {
-            List<SLRoute> nextRoutes = new ArrayList<>();
-            for (SLRoute route1 : routes) {
-                for (SLRoute route2 : route1.intersectingRoutes()) {
+            List<Route> nextRoutes = new ArrayList<>();
+            for (Route route1 : routesInCommon) {
+                for (Route route2 : route1.intersectingRoutes()) {
                     if (j.getRoutes().contains(route2)) {
                         return steps;
                     }
@@ -352,7 +449,7 @@ public class SLlight {
                 }
             }
             steps++;
-            routes = nextRoutes;
+            routesInCommon = nextRoutes;
         }
     }
 }

@@ -8,41 +8,41 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Path {
-    private List<SLStop> firstPartOfPath;
-    private SLRoute restOfPath;
-    private SLStop to;
+    private List<Station> firstPartOfPath;
+    private Route restOfPath;
+    private Station to;
 
-    public Path(SLRoute route, SLStop to){
-        firstPartOfPath = new LinkedList<SLStop>();
+    public Path(Route route, Station to){
+        firstPartOfPath = new LinkedList<Station>();
         restOfPath=route;
         this.to=to;
     }
 
-    public Path(SLRoute route, SLStop to, SLStop... stops){
+    public Path(Route route, Station to, Station... stops){
         firstPartOfPath = new LinkedList<>();
         firstPartOfPath.addAll(Arrays.asList(stops));
         restOfPath=route;
         this.to=to;
     }
 
-    public Path(SLRoute route, SLStop to, List<SLStop> stops){
+    public Path(Route route, Station to, List<Station> stops){
         firstPartOfPath = new LinkedList<>();
         firstPartOfPath.addAll(stops);
         restOfPath=route;
         this.to=to;
     }
 
-    public Path(List<SLStop> firstPartOfPath, SLRoute restOfPath, SLStop to){
+    public Path(List<Station> firstPartOfPath, Route restOfPath, Station to){
         this.firstPartOfPath = firstPartOfPath;
         this.restOfPath = restOfPath;
         this.to = to;
     }    
 
-    public boolean addStop(SLStop stop){
+    public boolean addStop(Station stop){
         return firstPartOfPath.add(stop);
     }
 
-    public List<SLStop> getFirstPartOfPath() {
+    public List<Station> getFirstPartOfPath() {
         return firstPartOfPath;
     }
 

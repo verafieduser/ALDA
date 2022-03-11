@@ -4,12 +4,12 @@
 package se.su.dsv.MyAldaList.ProjectTwo;
 
 public class Edge {
-    private final SLStopTime from;
-    private final SLStopTime to;
+    private final StopTime from;
+    private final StopTime to;
     private final Time cost;
     private final String type;
 
-    public Edge(SLStopTime from, SLStopTime to, String type) {
+    public Edge(StopTime from, StopTime to, String type) {
         this.from = from;
         this.to = to;
         if (from == null || to == null) {
@@ -20,19 +20,19 @@ public class Edge {
         this.type = type;
     }
 
-    public SLStopTime getFrom() {
+    public StopTime getFrom() {
         return from;
     }
 
-    public SLStopTime getTo() {
+    public StopTime getTo() {
         return to;
     }
 
-    public SLTrip getTrip() {
+    public Trip getTrip() {
         return from.getTrip();
     }
 
-    public SLRoute getRoute() {
+    public Route getRoute() {
         return from.getTrip().getRoute();
     }
 
@@ -63,8 +63,8 @@ public class Edge {
     @Override
     public String toString() {
         return "{" +
-                " from='" + getFrom().getStop().getName() + "'" +
-                ", to='" + getTo().getStop().getName() + "'" +
+                " from='" + getFrom().getStation().getName() + "'" +
+                ", to='" + getTo().getStation().getName() + "'" +
                 ", on line=' " + getRoute().getShortName() + " towards " + getTrip().getHeadsign() + "'" +
                 ", \ntotal travel time='" + getCost() + "'" +
 

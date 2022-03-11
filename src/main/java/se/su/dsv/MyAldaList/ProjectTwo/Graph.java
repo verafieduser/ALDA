@@ -24,14 +24,14 @@ public class Graph {
      * Collection of nodes that make up the graph. The nodes store the edges.
      * Is used to locate start and end nodes for the path finding algorithms.
      */
-    private Set<SLStop> nodes;
+    private Set<Station> nodes;
 
     /**
      * Creates a graph with the nodes specified.
      * @param nodes for full functionality, the data already needs to be fully
      * connected by the SLlight-class. 
      */
-    public Graph(List<SLStop> nodes) {
+    public Graph(List<Station> nodes) {
         this.nodes = new HashSet<>(nodes);
     }
 
@@ -40,7 +40,7 @@ public class Graph {
     * @param nodes for full functionality, the data already needs to be fully
     * connected by the SLlight-class. 
     */
-    public Graph(Set<SLStop> nodes) {
+    public Graph(Set<Station> nodes) {
         this.nodes = new HashSet<>(nodes);
     }
 
@@ -52,10 +52,10 @@ public class Graph {
      * @return a list of stops that neighbours param current, with costs
      * added for the path taken so far.
      */
-    public List<SLStop> addNeighbouringNodes(SLStop current, SLStop goal) {
-        List<SLStop> neighbours = new LinkedList<>();
+    public List<Station> addNeighbouringNodes(Station current, Station goal) {
+        List<Station> neighbours = new LinkedList<>();
         for (Edge edge : current.getUniqueEdges()) {
-            SLStop stop = edge.getTo().getStop();
+            Station stop = edge.getTo().getStation();
             Time nextStopRouteCost = Time.plus(current.getCurrentRouteScore(), edge.getCost());
             // if the new connection takes less time than the old one, add it (prohibits
             // visited nodes to be visited over n over)
@@ -83,7 +83,7 @@ public class Graph {
      * @param to
      * @return
      */
-    public double calculateDistance(SLStop from, SLStop to) {
+    public double calculateDistance(Station from, Station to) {
         double[] latlot1 = from.getLatlon();
         double[] latlot2 = to.getLatlon();
         double lon1 = latlot1[1];
@@ -111,8 +111,8 @@ public class Graph {
      * @return the node found with the same name as the param query string content. 
      * Returns null if none was found.
      */
-    public SLStop findNode(String query) {
-        for (SLStop stop : nodes) {
+    public Station findNode(String query) {
+        for (Station stop : nodes) {
             if (stop.getName().toLowerCase().equals(query.toLowerCase())) {
                 return stop;
             }
@@ -125,7 +125,7 @@ public class Graph {
      * A* algorithm.
      */
     public void clear() {
-        for (SLStop node : nodes) {
+        for (Station node : nodes) {
             node.clear();
         }
     }
