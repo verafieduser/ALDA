@@ -1,3 +1,7 @@
+/**
+ * @author Vera Nygren, klny8594
+ */
+
 package se.su.dsv.MyAldaList.ProjectTwo;
 
 import java.util.HashSet;
@@ -23,13 +27,19 @@ public class Graph {
     private Set<SLStop> nodes;
 
     /**
-     * 
-     * @param nodes
+     * Creates a graph with the nodes specified.
+     * @param nodes for full functionality, the data already needs to be fully
+     * connected by the SLlight-class. 
      */
     public Graph(List<SLStop> nodes) {
         this.nodes = new HashSet<>(nodes);
     }
 
+    /**
+    * Creates a graph with the nodes specified.
+    * @param nodes for full functionality, the data already needs to be fully
+    * connected by the SLlight-class. 
+    */
     public Graph(Set<SLStop> nodes) {
         this.nodes = new HashSet<>(nodes);
     }

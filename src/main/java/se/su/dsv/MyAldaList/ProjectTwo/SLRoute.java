@@ -1,3 +1,6 @@
+/**
+ * @author Vera Nygren, klny8594
+ */
 package se.su.dsv.MyAldaList.ProjectTwo;
 
 import java.util.HashSet;

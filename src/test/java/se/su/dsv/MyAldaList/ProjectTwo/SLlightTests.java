@@ -1,28 +1,24 @@
+/**
+ * @author Vera Nygren, klny8594
+ */
 package se.su.dsv.MyAldaList.ProjectTwo;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.List;
-
 import org.junit.jupiter.api.*;
 
-
-/**
- * @author vera nygren
- */
 public class SLlightTests {
 
 	private SLlight sl;
 	private Time defaultTime = new Time("10:10:10");
 
-
-    @BeforeEach
+	@BeforeEach
 	public void setUp() {
 		sl = new SLlight();
 		sl.initializeData(false);
 	}
 
-	@Test 
+	@Test
 	public void findNeighbouringNodeAStarDepartureAfterTime() {
 		SLStop from = sl.findNode("Fridhemsplan T-bana");
 		SLStop to = sl.findNode("S:t eriksplan T-bana");
@@ -30,12 +26,12 @@ public class SLlightTests {
 		assertEquals(1, edges.size());
 		Edge edge = edges.get(0);
 		assertEquals("metro", edge.getType());
-		//it leaves after the time specified:
+		// it leaves after the time specified:
 		assertTrue(defaultTime.compareTo(edge.getFrom().getDepartureTime()) < 0);
 
 	}
 
-	@Test 
+	@Test
 	public void findNeighbouringNodeAStarArrivalBeforeTime() {
 		SLStop from = sl.findNode("Fridhemsplan T-bana");
 		SLStop to = sl.findNode("S:t eriksplan T-bana");
@@ -43,7 +39,7 @@ public class SLlightTests {
 		assertEquals(1, edges.size());
 		Edge edge = edges.get(0);
 		assertEquals("metro", edge.getType());
-		//it leaves after the time specified:
+		// it leaves after the time specified:
 		assertTrue(defaultTime.compareTo(edge.getFrom().getDepartureTime()) > 0);
 	}
 
@@ -69,6 +65,5 @@ public class SLlightTests {
 		assertEquals("tramway", edge.getType());
 		assertTrue(defaultTime.compareTo(edge.getFrom().getDepartureTime()) > 0);
 	}
-
 
 }
