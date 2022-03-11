@@ -51,7 +51,7 @@ public class StopTime implements Comparable<StopTime> {
     /**
      * @return the time this station occurs
      */
-    public Time getDepartureTime() {
+    public Time getTime() {
         return time;
     }
 
@@ -96,7 +96,7 @@ public class StopTime implements Comparable<StopTime> {
     public String toString() {
         return "\nSL_STOP_TIME: {" +
                 "\n\t trip='" + getTrip().getHeadsign() + "'" +
-                ",\n\t departure_time='" + getDepartureTime() + "'" +
+                ",\n\t departure_time='" + getTime() + "'" +
                 ",\n\t station='" + getStation().getName() + "'" +
                 ",\n\t stop_sequence='" + getSequence() + "'" +
                 "}";

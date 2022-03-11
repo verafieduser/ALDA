@@ -47,8 +47,8 @@ public class SLLight {
 
     public static void main(String[] args) {
         SLLight sl = new SLLight();
-        sl.initializeData(true, false);
-        sl.queryUser();
+        sl.initializeData(true, true);
+        //sl.queryUser();
         sl.close();
     }
 
@@ -73,15 +73,14 @@ public class SLLight {
             Station[] fromAndTo = queryUserAboutTrip();
             Station from = fromAndTo[0];
             Station to = fromAndTo[1];
-            boolean resultByArrival = queryUserAboutTime();
             Time t = queryUserAboutWhen();
             System.out.println("Going from: " + from.getName() + " to: " + to.getName());
             System.out.print("Do you want to find a trip with a minimum amount of shifts? y/n: ");
             List<Edge> path;
             if (in.nextLine().equalsIgnoreCase("y")) {
-                path = pathfinder.minimumShifts(from, to, t, resultByArrival);
+                path = pathfinder.minimumShifts(from, to, t);
             } else {
-                path = pathfinder.aStar(from, to, t, resultByArrival);
+                path = pathfinder.aStar(from, to, t);
             }
             System.out.println(pathfinder.printPath(path));
             System.out.print("Press enter for another trip: ");
@@ -109,12 +108,12 @@ public class SLLight {
      *         at specified time, or one in which
      *         they depart at specified time.
      */
-    private boolean queryUserAboutTime() {
-        System.out.print("Enter which you prefer: An answer in which time determines arrival at goal(1), "
-                + "or an answer in which time determines departure from start(2)");
-        String answer = in.nextLine();
-        return answer.equalsIgnoreCase("1");
-    }
+    // private boolean queryUserAboutTime() {
+    //     System.out.print("Enter which you prefer: An answer in which time determines arrival at goal(1), "
+    //             + "or an answer in which time determines departure from start(2)");
+    //     String answer = in.nextLine();
+    //     return answer.equalsIgnoreCase("1");
+    // }
 
     /**
      * Helper method for queryUser()
@@ -174,9 +173,9 @@ public class SLLight {
      */
     public List<Edge> findPath(Station from, Station to, Time time, boolean timeIsArrivalAtGoal, boolean astar) {
         if (astar) {
-            return pathfinder.aStar(from, to, time, timeIsArrivalAtGoal);
+            return pathfinder.aStar(from, to, time);
         }
-        return pathfinder.minimumShifts(from, to, time, timeIsArrivalAtGoal);
+        return pathfinder.minimumShifts(from, to, time);
 
     }
 
@@ -399,7 +398,16 @@ public class SLLight {
      * Method in which you can put tests for the app.
      */
     public void tests() {
-        testMaxShifts();
+        //testMaxShifts();
+        Station from = findNode("Brevik");
+        Station to = findNode("Skogvaktargatan");
+
+        if(from == null || to == null){
+            System.out.println("Stations not found");
+            return;
+        }
+        System.out.println(
+            pathfinder.printPath(pathfinder.aStar(from, to, new Time("10:00:00"))));
     }
 
     /**

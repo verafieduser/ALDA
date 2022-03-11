@@ -4,6 +4,7 @@
 
 package se.su.dsv.MyAldaList.ProjectTwo;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,96 +29,6 @@ public class PathFinder {
     }
 
     /**
-     * A worst case N^3 method for finding a path between two stations.
-     * It is constructed to return the path with the least changes between lines.
-     * N^3 is proven by method SLlight.testMaxShifts() that gives 3 to be the max
-     * amount of changes required for our dataset.
-     * 
-     * @param start               the station to start from
-     * @param goal                the station to arrive at
-     * @param time                the time you want to find a path for
-     * @param timeIsArrivalAtGoal determines if you want to arrive at the
-     *                            destination at param time (true), or
-     *                            instead: depart at param time (false)
-     * @return a list of edges connecting the two stations
-     */
-    public List<Edge> minimumShifts(Station start, Station goal, Time time, boolean timeIsArrivalAtGoal) {
-        List<Edge> result = new LinkedList<>();
-        List<Route> connectingRoutes = findConnectingRoutes(start, goal);
-
-        if (connectingRoutes == null || connectingRoutes.isEmpty()) {
-            System.out.println("Oops! Something went wrong");
-            return null;
-        }
-
-        // edge case for when there is only one route:
-        if (connectingRoutes.size() == 1) {
-            Trip trip = connectingRoutes.get(0).connectingTrip(start, goal, time, timeIsArrivalAtGoal);
-            return trip.getPath(start, goal);
-        }
-
-        for (int i = 0; i < connectingRoutes.size() - 1; i++) {
-
-            // finds the stops that intersect two routes:
-            Set<Station> intersectingStops = connectingRoutes.get(i).intersectingStops(connectingRoutes.get(i + 1));
-            // chooses one of those stops arbitrarily:
-            Station arbitraryStop = intersectingStops.iterator().next();
-            // Finds a trip at a relevant time that connects from where
-            // we currently are, to the intersecting stop:
-            Trip trip = connectingRoutes.get(i).connectingTrip(start, arbitraryStop, time,
-                    timeIsArrivalAtGoal);
-            // TODO: clock is currently only earliest departure! never latest arrival!
-            time = timeIsArrivalAtGoal ? trip.getStopTime(start).getDepartureTime()
-                    : trip.getStopTime(arbitraryStop).getDepartureTime();
-            // turn that trip into a path of edges:
-            result.addAll(0, trip.getPath(start, arbitraryStop));
-
-            // preparation for the next stop of the iteration:
-            start = arbitraryStop;
-
-        }
-        Trip trip = connectingRoutes.get(connectingRoutes.size() - 1).connectingTrip(start, goal, time,
-                timeIsArrivalAtGoal);
-        result.addAll(0, trip.getPath(start, goal));
-        return result;
-    }
-
-    /**
-     * N^3 method for finding the series of routes that connect start with goal.
-     * 
-     * @param start the station to start at
-     * @param goal  the station to end at
-     * @return a list of routes that connect the two stations, min size=1, max
-     *         size=3.
-     */
-    private List<Route> findConnectingRoutes(Station start, Station goal) {
-        List<Route> result = new LinkedList<>();
-
-        for (Route route : start.getRoutes()) {
-            if (goal.getRoutes().contains(route)) {
-                result.add(route);
-                return result;
-            }
-            for (Route route2 : route.intersectingRoutes()) {
-                if (goal.getRoutes().contains(route2)) {
-                    result.add(route);
-                    result.add(route2);
-                    return result;
-                }
-                for (Route route3 : route2.intersectingRoutes()) {
-                    if (goal.getRoutes().contains(route3)) {
-                        result.add(route);
-                        result.add(route2);
-                        result.add(route3);
-                        return result;
-                    }
-                }
-            }
-        }
-        return Collections.emptyList();
-    }
-
-    /**
      * A* algorithm for finding a path between two stations. Uses geo-distance as
      * heuristic, to determine which stop is the best to
      * go to next. This can find a path efficiently - but that path is usually not
@@ -135,7 +46,7 @@ public class PathFinder {
      *                            start(false).
      * @return a list of edges that connect start and goal at times specified.
      */
-    public List<Edge> aStar(Station start, Station goal, Time time, boolean timeIsArrivalAtGoal) {
+    public List<Edge> aStar(Station start, Station goal, Time time) {
         if (start.equals(goal)) {
             System.out.println("No trip required because you are already at destination!");
             return null;
@@ -144,22 +55,21 @@ public class PathFinder {
         start.setCurrentRouteScore(new Time("0:0:0"));
         start.setDistanceToGoalScore(graph.calculateDistance(start, goal));
         foundNodes.add(start);
-        return aStarRecursivePart(foundNodes, goal, time, timeIsArrivalAtGoal);
+        return aStarRecursivePart(foundNodes, goal, time);
     }
 
-    private List<Edge> aStarRecursivePart(Queue<Station> foundNodes, Station goal, Time time,
-            boolean timeIsArrivalAtGoal) {
+    private List<Edge> aStarRecursivePart(Queue<Station> foundNodes, Station goal, Time time) {
         Station current = foundNodes.poll(); // chooses the one with lowest estimated score
         if (current.equals(goal)) {
             System.out.println("Found path!");
-            return pathCollection(goal, time, timeIsArrivalAtGoal);
+            return pathCollection(goal, time);
         }
         foundNodes.addAll(graph.addNeighbouringNodes(current, goal));
         if (foundNodes.isEmpty()) {
             graph.clear();
             return null;
         }
-        return aStarRecursivePart(foundNodes, goal, time, timeIsArrivalAtGoal);
+        return aStarRecursivePart(foundNodes, goal, time);
     }
 
     /**
@@ -176,9 +86,9 @@ public class PathFinder {
      *                            start(false).
      * @return a list of edges that connect start and goal at times specified.
      */
-    private List<Edge> pathCollection(Station goal, Time time, boolean timeIsArrivalAtGoal) {
+    private List<Edge> pathCollection(Station goal, Time time) {
         LinkedList<Edge> path = new LinkedList<>();
-        while (!timeIsArrivalAtGoal && goal.getPrevious() != null) {
+        while (goal.getPrevious() != null) {
             Station previous = goal.getPrevious();
 
             Time newTime = Time.plus(time, previous.getCurrentRouteScore());
@@ -190,17 +100,98 @@ public class PathFinder {
             }
         }
 
-        Station previous = goal.getPrevious();
-        path.add(previous.edgeAtLatestTime(time, goal));
-        goal = previous;
-        while (goal.getPrevious() != null) {
-            previous = goal.getPrevious();
-            time = Time.minus(time, path.peekLast().getCost());
-            path.add(previous.edgeAtLatestTime(time, goal));
-            goal = previous;
+        return null;
+    }
+
+    
+    /**
+     * A worst case N^3 method for finding a path between two stations.
+     * It is constructed to return the path with the least changes between lines.
+     * N^3 is proven by method SLlight.testMaxShifts() that gives 3 to be the max
+     * amount of changes required for our dataset.
+     * 
+     * @param start               the station to start from
+     * @param goal                the station to arrive at
+     * @param time                the time you want to find a path for
+     * @return a list of edges connecting the two stations
+     */
+    public List<Edge> minimumShifts(Station start, Station goal, Time time) {
+        List<Edge> result = new LinkedList<>();
+        List<Route> connectingRoutes = findConnectingRoutes(start, goal);
+
+        if (connectingRoutes == null || connectingRoutes.isEmpty()) {
+            System.out.println("Oops! Something went wrong");
+            return null;
         }
 
-        return path;
+        // edge case for when there is only one route:
+        if (connectingRoutes.size() == 1) {
+            Trip trip = connectingRoutes.get(0).connectingTrip(start, goal, time);
+            return trip.getPath(start, goal);
+        }
+
+        for (int i = 0; i < connectingRoutes.size() - 1; i++) {
+
+            // finds the stops that intersect two routes:
+            Set<Station> intersectingStops = connectingRoutes.get(i).intersectingStops(connectingRoutes.get(i + 1));
+            // chooses one of those stops arbitrarily:
+            Station arbitraryStop = intersectingStops.iterator().next();
+            // Finds a trip at a relevant time that connects from where
+            // we currently are, to the intersecting stop:
+            Trip trip = connectingRoutes.get(i).connectingTrip(start, arbitraryStop, time); //trip can be null from connectingTrip()
+            // TODO: clock is currently only earliest departure! never latest arrival!
+            time = trip.getStopTime(arbitraryStop).getTime();
+            // turn that trip into a path of edges:
+            result.addAll(0, trip.getPath(start, arbitraryStop));
+
+            // preparation for the next stop of the iteration:
+            start = arbitraryStop;
+
+        }
+        Trip trip = connectingRoutes.get(connectingRoutes.size() - 1).connectingTrip(start, goal, time);
+        result.addAll(0, trip.getPath(start, goal));
+        return result;
+    }
+
+    /**
+     * N^3 method for finding the series of routes that connect start with goal.
+     * 
+     * @param start the station to start at
+     * @param goal  the station to end at
+     * @return a list of routes that connect the two stations, min size=1, max
+     *         size=3.
+     */
+    private List<Route> findConnectingRoutes(Station start, Station goal) {
+        List<List<Route>> candidates = findConnectingRoutesRecursive(start.getRoutes(), goal, new LinkedList<>(), 0);
+        List<Route> bestCandidate = new LinkedList<>();
+        for(List<Route> candidate : candidates){
+            if(bestCandidate.isEmpty() || candidate.size()<bestCandidate.size()){
+                bestCandidate = candidate;
+            }
+        }
+        return bestCandidate;
+    }
+
+    private List<List<Route>> findConnectingRoutesRecursive(Set<Route> routes, Station goal, List<Route> previousRoutes, int steps){
+        List<List<Route>> result = new LinkedList<>();
+        for(Route route : routes){
+            if(goal.getRoutes().contains(route)){
+                List<Route> candidate = new LinkedList<>();
+                candidate.addAll(previousRoutes);
+                candidate.add(route);
+                result.add(candidate);
+            }
+            List<Route> previous = new LinkedList<>(previousRoutes);
+            previous.add(route);
+            if(steps<8){
+                steps+=1;
+                result.addAll(findConnectingRoutesRecursive(route.intersectingRoutes(), goal, previous, steps));
+            }
+            
+
+        }
+
+        return result.isEmpty() ? Collections.emptyList() : result;
     }
 
     public String printPath(List<Edge> path) {
@@ -227,11 +218,11 @@ public class PathFinder {
             sb.append("\n\tFrom:\t"
                     + edge.getFrom().getStation().getName()
                     + "\n\t\t   departs at\t"
-                    + edge.getFrom().getDepartureTime());
+                    + edge.getFrom().getTime());
             sb.append("\n\tTo:\t"
                     + edge.getTo().getStation().getName()
                     + "\n\t\t   arrives at\t"
-                    + edge.getTo().getDepartureTime());
+                    + edge.getTo().getTime());
             timeOnShift = Time.plus(timeOnShift, edge.getCost());
             cost = Time.plus(cost, edge.getCost());
 

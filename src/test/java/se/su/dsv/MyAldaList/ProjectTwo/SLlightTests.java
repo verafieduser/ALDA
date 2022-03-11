@@ -27,7 +27,7 @@ public class SLLightTests {
 		Edge edge = edges.get(0);
 		assertEquals("metro", edge.getType());
 		// it leaves after the time specified:
-		assertTrue(defaultTime.compareTo(edge.getFrom().getDepartureTime()) < 0);
+		assertTrue(defaultTime.compareTo(edge.getFrom().getTime()) < 0);
 
 	}
 
@@ -40,7 +40,7 @@ public class SLLightTests {
 		Edge edge = edges.get(0);
 		assertEquals("metro", edge.getType());
 		// it leaves after the time specified:
-		assertTrue(defaultTime.compareTo(edge.getFrom().getDepartureTime()) > 0);
+		assertTrue(defaultTime.compareTo(edge.getFrom().getTime()) > 0);
 	}
 
 	@Test
@@ -51,7 +51,7 @@ public class SLLightTests {
 		assertEquals(9, edges.size());
 		Edge edge = edges.get(0);
 		assertEquals("tramway", edge.getType());
-		assertTrue(defaultTime.compareTo(edge.getFrom().getDepartureTime()) < 0);
+		assertTrue(defaultTime.compareTo(edge.getFrom().getTime()) < 0);
 	}
 
 	@Test
@@ -63,7 +63,7 @@ public class SLLightTests {
 		assertEquals(9, edges.size());
 		Edge edge = edges.get(0);
 		assertEquals("tramway", edge.getType());
-		assertTrue(defaultTime.compareTo(edge.getFrom().getDepartureTime()) > 0);
+		assertTrue(defaultTime.compareTo(edge.getFrom().getTime()) > 0);
 	}
 
 }

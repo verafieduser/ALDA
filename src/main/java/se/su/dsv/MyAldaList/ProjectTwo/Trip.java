@@ -102,7 +102,7 @@ public class Trip {
         }
         StopTime candidate2 = stopTimes.get(currentStopSeq - 2);
 
-        return candidate1.getDepartureTime().compareTo(candidate2.getDepartureTime()) < 0 ? candidate2 : candidate1;
+        return candidate1.getTime().compareTo(candidate2.getTime()) < 0 ? candidate2 : candidate1;
     }
 
     /**
@@ -157,7 +157,7 @@ public class Trip {
         if (fromTime == null || toTime == null) {
             return false;
         }
-        return fromTime.getDepartureTime().compareTo(toTime.getDepartureTime()) < 0;
+        return fromTime.getTime().compareTo(toTime.getTime()) < 0;
 
     }
 

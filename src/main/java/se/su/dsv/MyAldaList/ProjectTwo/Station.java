@@ -127,12 +127,17 @@ public class Station implements Comparable<Station> {
      */
     public Edge edgeAtEarliestTime(Time earliestTime, Station stop) {
         Edge[] edgesAtTime = edgesAtEarliestTime(earliestTime);
+        Edge bestEdge = null;
+        Time bestTime = new Time("99:00:00");
         for (Edge edge : edgesAtTime) {
             if (edge.getTo().getStation().equals(stop)) {
-                return edge;
+                if(edge.getTo().getTime().compareTo(bestTime) < 0){
+                    bestEdge = edge;
+                    bestTime = edge.getTo().getTime();
+                }
             }
         }
-        return null;
+        return bestEdge;
     }
 
     /**
@@ -149,10 +154,10 @@ public class Station implements Comparable<Station> {
             Station to = edge.getTo().getStation();
             StopTime from = edge.getFrom();
             // we are not interested in already departed times
-            if (from.getDepartureTime().compareTo(earliestTime) >= 0) {
+            if (from.getTime().compareTo(earliestTime) >= 0) {
                 Edge old = map.get(to);
                 // if new is earlier than old one, if there is one, add new:
-                if (old == null || from.getDepartureTime().compareTo(old.getFrom().getDepartureTime()) < 0) {
+                if (old == null || from.getTime().compareTo(old.getFrom().getTime()) < 0) {
                     map.put(to, edge);
                 }
             }
@@ -192,10 +197,10 @@ public class Station implements Comparable<Station> {
             Station to = edge.getTo().getStation();
             StopTime from = edge.getFrom();
             // we are not interested in already departed times
-            if (from.getDepartureTime().compareTo(latestTime) <= 0) {
+            if (from.getTime().compareTo(latestTime) <= 0) {
                 Edge old = map.get(to);
                 // if new is earlier than old one, if there is one, add new:
-                if (old == null || from.getDepartureTime().compareTo(old.getFrom().getDepartureTime()) > 0) {
+                if (old == null || from.getTime().compareTo(old.getFrom().getTime()) > 0) {
                     map.put(to, edge);
                 }
             }

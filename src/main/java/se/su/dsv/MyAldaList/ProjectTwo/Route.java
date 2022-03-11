@@ -107,25 +107,33 @@ public class Route implements Comparable<Route> {
      * @param to                  the station you want the trip to include that you
      *                            end at. Must be on the same route as param from.
      * @param earliestTime        the time you want the trip to be determined by.
-     * @param timeIsArrivalAtGoal if you want the time to be when you arrive, or
-     *                            when you depart.
      * @return a trip connecting "from" with "to"
      */
-    public Trip connectingTrip(Station from, Station to, Time earliestTime, boolean timeIsArrivalAtGoal) {
+    public Trip connectingTrip(Station from, Station to, Time earliestTime) {
         Trip currentBestTrip = null;
-        Time currentBestStopTime = timeIsArrivalAtGoal ? new Time("24:00:00") : new Time("00:00:00");
+        Time currentBestTime = new Time("99:00:00");
+        //Search through all trips on this route:
         for (Trip trip : trips) {
-
+            //Get all the stops from the current trip
             List<Station> tripStops = trip.getStops();
-
+            //Trip must contain from, and to, and be able to take user from "from", to "to". 
             if (tripStops.contains(from) && tripStops.contains(to) && trip.traversable(from, to)) {
-                StopTime stopTime = trip.getStopTime(from);
-                Time departureTime = stopTime.getDepartureTime();
-                if (arrivalByTime(timeIsArrivalAtGoal, earliestTime, departureTime, currentBestStopTime)) {
-                    currentBestStopTime = departureTime;
+                //The stoptime that departs from "from"
+                StopTime stop = trip.getStopTime(from);
+                //The time that stoptime departs
+                Time stopTime = stop.getTime();
+                //It must be after or at earliest time - but prefer one that is before earlier alternatives
+                if (stopTime.compareTo(earliestTime) >= 0 && stopTime.compareTo(currentBestTime) < 0) {
+                    currentBestTime = stopTime;
                     currentBestTrip = trip;
                 }
             }
+        }
+        if(currentBestTrip == null){
+            String eM = "No trip was found, when stations should've been on the same route! ";
+            eM += "The route was: " + toString();
+            eM += "\nAnd from was\n" + from.toString() + "\nAnd goal was:\n" + to.toString();
+            throw new IllegalStateException(eM);
         }
         return currentBestTrip;
     }
@@ -134,22 +142,14 @@ public class Route implements Comparable<Route> {
      * helper method for connectingTrip() that decides whether time is decided by
      * when you arrive at goal, or when you depart from start.
      * 
-     * @param timeIsArrivalAtGoal value that decides how the result is to be
-     *                            calculated.
      * @param earliestTime
      * @param departureTime
      * @param currentBestStopTime
-     * @return a boolean value, constructed differently depending on if
-     *         timeIsArrivalAtGoal is true or false.
+     * @return 
      */
-    private boolean arrivalByTime(boolean timeIsArrivalAtGoal, Time earliestTime, Time departureTime,
-            Time currentBestStopTime) {
-        if (timeIsArrivalAtGoal) {
-            return departureTime.compareTo(earliestTime) >= 0
-                    && departureTime.compareTo(currentBestStopTime) < 0;
-        }
-        return departureTime.compareTo(earliestTime) <= 0
-                && departureTime.compareTo(currentBestStopTime) > 0;
+    private boolean departureIsAfter(Time earliestTime, Time departureTime, Time currentBestStopTime) {
+        return departureTime.compareTo(earliestTime) >= 0
+                && departureTime.compareTo(currentBestStopTime) < 0;
     }
 
     /**

@@ -80,7 +80,7 @@ public class Time implements Comparable<Time> {
      * @return a time object with the difference between the time objects in the parameters. 
      */
     public static Time timeDifference(StopTime from, StopTime to){
-        return timeDifference(from.getDepartureTime(), to.getDepartureTime(), false);
+        return timeDifference(from.getTime(), to.getTime(), false);
     }
 
         /**
@@ -96,7 +96,7 @@ public class Time implements Comparable<Time> {
      * @return a time object with the difference between the time objects in the parameters. 
      */
     public static Time timeDifference(StopTime from, StopTime to, boolean withNegative){
-        return timeDifference(from.getDepartureTime(), to.getDepartureTime(), withNegative);
+        return timeDifference(from.getTime(), to.getTime(), withNegative);
     }
 
     /**
