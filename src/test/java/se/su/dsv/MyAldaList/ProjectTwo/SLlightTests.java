@@ -24,8 +24,8 @@ public class SLlightTests {
 
 	@Test 
 	public void findNeighbouringNodeAStarDepartureAfterTime() {
-		SL_Stop from = sl.findNode("Fridhemsplan T-bana");
-		SL_Stop to = sl.findNode("S:t eriksplan T-bana");
+		SLStop from = sl.findNode("Fridhemsplan T-bana");
+		SLStop to = sl.findNode("S:t eriksplan T-bana");
 		List<Edge> edges = sl.findPath(from, to, defaultTime, false, true);
 		assertEquals(1, edges.size());
 		Edge edge = edges.get(0);
@@ -37,8 +37,8 @@ public class SLlightTests {
 
 	@Test 
 	public void findNeighbouringNodeAStarArrivalBeforeTime() {
-		SL_Stop from = sl.findNode("Fridhemsplan T-bana");
-		SL_Stop to = sl.findNode("S:t eriksplan T-bana");
+		SLStop from = sl.findNode("Fridhemsplan T-bana");
+		SLStop to = sl.findNode("S:t eriksplan T-bana");
 		List<Edge> edges = sl.findPath(from, to, defaultTime, true, true);
 		assertEquals(1, edges.size());
 		Edge edge = edges.get(0);
@@ -49,8 +49,8 @@ public class SLlightTests {
 
 	@Test
 	public void findPathOnSameLineMinShiftDepartureAfterTime() {
-		SL_Stop from = sl.findNode("Ropsten t-bana");
-		SL_Stop to = sl.findNode("Brevik");
+		SLStop from = sl.findNode("Ropsten t-bana");
+		SLStop to = sl.findNode("Brevik");
 		List<Edge> edges = sl.findPath(from, to, defaultTime, false, false);
 		assertEquals(9, edges.size());
 		Edge edge = edges.get(0);
@@ -60,8 +60,8 @@ public class SLlightTests {
 
 	@Test
 	public void findPathOnSameLineMinShiftArrivalBeforeTime() {
-		SL_Stop from = sl.findNode("Ropsten t-bana");
-		SL_Stop to = sl.findNode("Brevik");
+		SLStop from = sl.findNode("Ropsten t-bana");
+		SLStop to = sl.findNode("Brevik");
 		List<Edge> edges = sl.findPath(from, to, defaultTime, true, false);
 		System.out.println(edges);
 		assertEquals(9, edges.size());

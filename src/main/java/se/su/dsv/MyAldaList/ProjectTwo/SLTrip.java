@@ -2,10 +2,11 @@ package se.su.dsv.MyAldaList.ProjectTwo;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 
-public class SL_Trip {
-    private SL_Route route;
+public class SLTrip {
+    private SLRoute route;
     /**
      * Unique identifier for trip:
      */
@@ -15,24 +16,24 @@ public class SL_Trip {
      */
     private String headsign;
 
-    private List<SL_Stop_Time> stopTimes = new ArrayList<>();
-    private List<SL_Stop> stops = new LinkedList<>();
+    private List<SLStopTime> stopTimes = new ArrayList<>();
+    private List<SLStop> stops = new LinkedList<>();
 
-    public SL_Trip(SL_Route route, long id, String headsign) {
+    public SLTrip(SLRoute route, long id, String headsign) {
         this.route = route;
         this.id = id;
         this.headsign = headsign;
     }
 
-    public SL_Stop_Time getStopTime(int i) {
+    public SLStopTime getStopTime(int i) {
         return stopTimes.get(i);
     }
 
-    public Edge getNext(SL_Stop currentStop) {
-        SL_Stop_Time from = null;
-        SL_Stop_Time to = null; 
+    public Edge getNext(SLStop currentStop) {
+        SLStopTime from = null;
+        SLStopTime to = null; 
 
-        for(SL_Stop_Time stopTime : stopTimes){
+        for(SLStopTime stopTime : stopTimes){
             if(stopTime.getStop().equals(currentStop)){
                 from = stopTime;
             }
@@ -44,38 +45,49 @@ public class SL_Trip {
         
         to=getNext(from);
 
+        if(to == null){
+            return null;
+        }
+
         return new Edge(from, to, route.getType());
     }
 
 
-    public SL_Stop_Time getNext(SL_Stop_Time from) {
+    public SLStopTime getNext(SLStopTime from) {
         int currentStopSeq = from.getSequence();
 
         if(currentStopSeq >= stopTimes.size()-1){
             return null;
         }
 
-        SL_Stop_Time candidate1 = stopTimes.get(currentStopSeq);
-        SL_Stop_Time candidate2 = stopTimes.get(currentStopSeq-2);
+        SLStopTime candidate1 = stopTimes.get(currentStopSeq);
+        if(candidate1.getSequence()-2 <= 0){
+            return candidate1;
+        }
+        SLStopTime candidate2 = stopTimes.get(currentStopSeq-2);
         
         return  candidate1.getDepartureTime().compareTo(candidate2.getDepartureTime()) < 0 ? 
                 candidate2 : candidate1;
     }
 
-    public List<Edge> getPath(SL_Stop from, SL_Stop to) {
+    public List<Edge> getPath(SLStop from, SLStop to) {
         return getPath(getStopTime(from), getStopTime(to));
     }
 
-    public List<Edge> getPath(SL_Stop_Time from, SL_Stop_Time to){
+    public List<Edge> getPath(SLStopTime from, SLStopTime to){
         List<Edge> path = new LinkedList<>();
 
-        SL_Stop_Time next = getNext(from);
-        while(next != to){
+        SLStopTime next = getNext(from);
+        while(from != null && next != null && next != to){
             path.add(new Edge(from, next, route.getType()));
             from = next;
             next = getNext(from);
         }
-        path.add(new Edge(from, next, route.getType()));
+        if(from == null){
+            throw new IllegalArgumentException("From was null! ");
+        }
+        path.add(new Edge(from, to, route.getType()));
+        Collections.reverse(path);
         return path;
     }
 
@@ -85,9 +97,9 @@ public class SL_Trip {
      * @param to is another station
      * @return true if both are on the same trip, and to is later than from.
      */
-    public boolean traversable(SL_Stop from, SL_Stop to){
-        SL_Stop_Time fromTime = getStopTime(from);
-        SL_Stop_Time toTime = getStopTime(to);
+    public boolean traversable(SLStop from, SLStop to){
+        SLStopTime fromTime = getStopTime(from);
+        SLStopTime toTime = getStopTime(to);
         if(fromTime == null || toTime == null){
             return false;
         }
@@ -96,8 +108,8 @@ public class SL_Trip {
     }
 
     
-    public SL_Stop_Time getStopTime(SL_Stop stop){
-        for(SL_Stop_Time stopTime : stopTimes){
+    public SLStopTime getStopTime(SLStop stop){
+        for(SLStopTime stopTime : stopTimes){
             if(stopTime.getStop().equals(stop)){
                 return stopTime;
             }
@@ -105,15 +117,15 @@ public class SL_Trip {
         return null;
     }
 
-    public List<SL_Stop_Time> getStopTimes() {
+    public List<SLStopTime> getStopTimes() {
         return this.stopTimes;
     }
 
-    public List<SL_Stop> getStops() {
+    public List<SLStop> getStops() {
         return this.stops;
     }
 
-    public boolean addStopTime(SL_Stop_Time stopTime) {
+    public boolean addStopTime(SLStopTime stopTime) {
         stops.add(stopTime.getStop());
         return stopTimes.add(stopTime);
     }
@@ -122,7 +134,7 @@ public class SL_Trip {
         stopTimes.sort(null);
     }
 
-    public SL_Route getRoute() {
+    public SLRoute getRoute() {
         return this.route;
     }
 

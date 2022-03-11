@@ -7,25 +7,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class SL_Stop implements Comparable<SL_Stop> {
+public class SLStop implements Comparable<SLStop> {
     private final int id;
     private final String name;
-    private final List<SL_Trip> trips = new LinkedList<>();
-    private final Set<SL_Route> routes = new HashSet<>();
+    private final List<SLTrip> trips = new LinkedList<>();
+    private final Set<SLRoute> routes = new HashSet<>();
     private final List<Edge> edges = new LinkedList<>();
     private final double[] latlon;
     private Time currentRouteScore;
     private double distanceToGoalScore;
-    private SL_Stop previous;
+    private SLStop previous;
 
-    public SL_Stop(int stopId, String stopName, double stopLat, double stopLon) {
+    public SLStop(int stopId, String stopName, double stopLat, double stopLon) {
         this.id = stopId;
         this.name = stopName;
         latlon = new double[] { stopLat, stopLon };
         currentRouteScore = new Time("99:00:00");
     }
 
-    public boolean addConnection(SL_Trip trip) {
+    public boolean addConnection(SLTrip trip) {
         Edge edge = trip.getNext(this);
         routes.add(trip.getRoute());
         if (edge != null) {
@@ -35,7 +35,7 @@ public class SL_Stop implements Comparable<SL_Stop> {
     }
 
     public void addEdges() {
-        for (SL_Trip trip : trips) {
+        for (SLTrip trip : trips) {
             Edge edge = trip.getNext(this);
             if (edge != null) {
                 edges.add(edge);
@@ -43,15 +43,15 @@ public class SL_Stop implements Comparable<SL_Stop> {
         }
     }
 
-    public void setPrevious(SL_Stop previous) {
+    public void setPrevious(SLStop previous) {
         this.previous = previous;
     }
 
-    public SL_Stop getPrevious() {
+    public SLStop getPrevious() {
         return previous;
     }
 
-    public Edge edgeAtEarliestTime(Time earliestTime, SL_Stop stop){
+    public Edge edgeAtEarliestTime(Time earliestTime, SLStop stop){
         Edge[] edgesAtTime = edgesAtEarliestTime(earliestTime);
         for(Edge edge : edgesAtTime){
             if(edge.getTo().getStop().equals(stop)){
@@ -62,10 +62,10 @@ public class SL_Stop implements Comparable<SL_Stop> {
     }
 
     public Edge[] edgesAtEarliestTime(Time earliestTime) {
-        Map<SL_Stop, Edge> map = new HashMap<>();
+        Map<SLStop, Edge> map = new HashMap<>();
         for (Edge edge : edges) {
-            SL_Stop to = edge.getTo().getStop();
-            SL_Stop_Time from = edge.getFrom();
+            SLStop to = edge.getTo().getStop();
+            SLStopTime from = edge.getFrom();
             //we are not interested in already departed times
             if (from.getDepartureTime().compareTo(earliestTime) >= 0) {
                 Edge old = map.get(to);
@@ -78,7 +78,7 @@ public class SL_Stop implements Comparable<SL_Stop> {
         return map.values().toArray(new Edge[map.size()]);
     }
 
-    public Edge edgeAtLatestTime(Time latestTime, SL_Stop stop){
+    public Edge edgeAtLatestTime(Time latestTime, SLStop stop){
         Edge[] edgesAtTime = edgesAtLatestTime(latestTime);
         for(Edge edge : edgesAtTime){
             if(edge.getTo().getStop().equals(stop)){
@@ -89,10 +89,10 @@ public class SL_Stop implements Comparable<SL_Stop> {
     }
 
     public Edge[] edgesAtLatestTime(Time latestTime) {
-        Map<SL_Stop, Edge> map = new HashMap<>();
+        Map<SLStop, Edge> map = new HashMap<>();
         for (Edge edge : edges) {
-            SL_Stop to = edge.getTo().getStop();
-            SL_Stop_Time from = edge.getFrom();
+            SLStop to = edge.getTo().getStop();
+            SLStopTime from = edge.getFrom();
             //we are not interested in already departed times
             if (from.getDepartureTime().compareTo(latestTime) <= 0) {
                 Edge old = map.get(to);
@@ -129,7 +129,7 @@ public class SL_Stop implements Comparable<SL_Stop> {
         this.distanceToGoalScore = distanceToGoalScore;
     }
 
-    public List<SL_Trip> getConnections() {
+    public List<SLTrip> getConnections() {
         return trips;
     }
 
@@ -141,15 +141,15 @@ public class SL_Stop implements Comparable<SL_Stop> {
         return this.name;
     }
 
-    public Set<SL_Route> getRoutes() {
+    public Set<SLRoute> getRoutes() {
         return routes;
     }
 
     private String printRoutes() {
         StringBuilder sb = new StringBuilder();
-        SL_Route lastRoute = null;
-        for (SL_Trip trip : trips) {
-            SL_Route thisRoute = trip.getRoute();
+        SLRoute lastRoute = null;
+        for (SLTrip trip : trips) {
+            SLRoute thisRoute = trip.getRoute();
             if (lastRoute != thisRoute) {
                 sb.append("\n\t" + thisRoute);
                 lastRoute = thisRoute;
@@ -182,10 +182,10 @@ public class SL_Stop implements Comparable<SL_Stop> {
     public boolean equals(Object o) {
         if (o == this)
             return true;
-        if (!(o instanceof SL_Stop)) {
+        if (!(o instanceof SLStop)) {
             return false;
         }
-        SL_Stop oStop = (SL_Stop) o;
+        SLStop oStop = (SLStop) o;
         return id == oStop.id;
     }
 
@@ -195,7 +195,7 @@ public class SL_Stop implements Comparable<SL_Stop> {
     }
 
     @Override
-    public int compareTo(SL_Stop o) {
+    public int compareTo(SLStop o) {
         int value = 0;
         if (distanceToGoalScore > o.distanceToGoalScore) {
             value = 1;

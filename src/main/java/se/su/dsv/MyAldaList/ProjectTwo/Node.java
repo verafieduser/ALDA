@@ -5,19 +5,19 @@ import java.util.List;
 
 public class Node implements Comparable<Node>{
 
-    private final SL_Stop stop;
+    private final SLStop stop;
     private final List<Edge> edges = new LinkedList<>();
     private Time currentRouteScore;
     private double distanceToGoalScore;
-    private SL_Stop previous;
+    private SLStop previous;
 
 
-    public Node(int id, SL_Stop stop) {
+    public Node(int id, SLStop stop) {
         this.stop = stop;
         this.currentRouteScore = new Time("99:00:00");
     }
 
-    public SL_Stop getStop() {
+    public SLStop getStop() {
         return stop;
     }
 

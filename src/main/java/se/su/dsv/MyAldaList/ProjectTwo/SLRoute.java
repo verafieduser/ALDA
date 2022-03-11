@@ -5,18 +5,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class SL_Route implements Comparable<SL_Route>{
+public class SLRoute implements Comparable<SLRoute>{
     private long id;
     private short shortName;
     private String type;
-    private List<SL_Trip> trips = new LinkedList<>();
-    private Set<SL_Stop> stops = new HashSet<>();
+    private List<SLTrip> trips = new LinkedList<>();
+    private Set<SLStop> stops = new HashSet<>();
 
-    public List<SL_Trip> getTrips() {
+    public List<SLTrip> getTrips() {
         return this.trips;
     }
 
-    public SL_Route(long id, short shortName, short type) {
+    public SLRoute(long id, short shortName, short type) {
         this.id = id;
         this.shortName = shortName;
         switch (type) {
@@ -38,16 +38,16 @@ public class SL_Route implements Comparable<SL_Route>{
         }
     }
 
-    public Set<SL_Stop> intersectingStops(SL_Route otherRoute){
-        Set<SL_Stop> intersection = stops;
+    public Set<SLStop> intersectingStops(SLRoute otherRoute){
+        Set<SLStop> intersection = stops;
         intersection.retainAll(otherRoute.getStops());
         return intersection;
     }
 
 
-    public Set<SL_Route> intersectingRoutes(){
-        Set<SL_Route> intersection = new HashSet<>();
-        for(SL_Stop stop : stops){
+    public Set<SLRoute> intersectingRoutes(){
+        Set<SLRoute> intersection = new HashSet<>();
+        for(SLStop stop : stops){
             intersection.addAll(stop.getRoutes());
         }
 
@@ -55,15 +55,15 @@ public class SL_Route implements Comparable<SL_Route>{
     }
 
     //TODO: currently returns trip in the wrong direction!
-    public SL_Trip connectingTrip(SL_Stop from, SL_Stop to, Time earliestTime, boolean timeIsArrivalAtGoal){
-        SL_Trip currentBestTrip = null;
+    public SLTrip connectingTrip(SLStop from, SLStop to, Time earliestTime, boolean timeIsArrivalAtGoal){
+        SLTrip currentBestTrip = null;
         Time currentBestStopTime = timeIsArrivalAtGoal ? new Time("24:00:00") : new Time("00:00:00");
-        for(SL_Trip trip : trips){
+        for(SLTrip trip : trips){
 
-            List<SL_Stop> tripStops = trip.getStops();
+            List<SLStop> tripStops = trip.getStops();
 
             if(tripStops.contains(from) && tripStops.contains(to) && trip.traversable(from, to)){
-                SL_Stop_Time stopTime = trip.getStopTime(from);
+                SLStopTime stopTime = trip.getStopTime(from);
                 Time departureTime = stopTime.getDepartureTime();
                 if  (arrivalByTime(timeIsArrivalAtGoal, earliestTime, departureTime, currentBestStopTime)) {
                     currentBestStopTime = departureTime;
@@ -83,15 +83,15 @@ public class SL_Route implements Comparable<SL_Route>{
         && departureTime.compareTo(currentBestStopTime) > 0;
     }
 
-    public boolean addTrip(SL_Trip trip){
+    public boolean addTrip(SLTrip trip){
         return trips.add(trip);
     }
 
-    public boolean addStop(SL_Stop stop){
+    public boolean addStop(SLStop stop){
         return stops.add(stop);
     }
 
-    public Set<SL_Stop> getStops() {
+    public Set<SLStop> getStops() {
         return stops;
     }
 
@@ -112,10 +112,10 @@ public class SL_Route implements Comparable<SL_Route>{
     public boolean equals(Object o) {
         if (o == this)
             return true;
-        if (!(o instanceof SL_Route)) {
+        if (!(o instanceof SLRoute)) {
             return false;
         }
-        SL_Route route = (SL_Route) o;
+        SLRoute route = (SLRoute) o;
         return id == route.id;
     }
 
@@ -126,7 +126,7 @@ public class SL_Route implements Comparable<SL_Route>{
 
 
     @Override
-    public int compareTo(SL_Route o) {
+    public int compareTo(SLRoute o) {
         int value = 0;
         if(type.equals("metro") && (o.type.equals("bus") || o.type.equals("tramway"))){
             value = 1;

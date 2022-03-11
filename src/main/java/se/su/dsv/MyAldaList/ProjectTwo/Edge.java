@@ -1,31 +1,35 @@
 package se.su.dsv.MyAldaList.ProjectTwo;
 
-public class Edge{
-    private final SL_Stop_Time from;
-    private final SL_Stop_Time to;
+public class Edge {
+    private final SLStopTime from;
+    private final SLStopTime to;
     private final Time cost;
     private final String type;
 
-    public Edge(SL_Stop_Time from, SL_Stop_Time to, String type){
+    public Edge(SLStopTime from, SLStopTime to, String type) {
         this.from = from;
         this.to = to;
-        cost = Time.timeDifference(from, to); //calculateTravelCost(from, to);
+        if (from == null || to == null) {
+            String message = from == null ? " from!" : " to!";
+            throw new IllegalArgumentException("An edge was created with null" + message);
+        }
+        cost = Time.timeDifference(from, to); // calculateTravelCost(from, to);
         this.type = type;
     }
 
-    public SL_Stop_Time getFrom() {
+    public SLStopTime getFrom() {
         return from;
     }
 
-    public SL_Stop_Time getTo() {
+    public SLStopTime getTo() {
         return to;
     }
 
-    public SL_Trip getTrip(){
+    public SLTrip getTrip() {
         return from.getTrip();
     }
 
-    public SL_Route getRoute(){
+    public SLRoute getRoute() {
         return from.getTrip().getRoute();
     }
 
@@ -36,7 +40,6 @@ public class Edge{
     public String getType() {
         return type;
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -51,20 +54,18 @@ public class Edge{
 
     @Override
     public int hashCode() {
-        return from.hashCode()+to.hashCode();
+        return from.hashCode() + to.hashCode();
     }
-
 
     @Override
     public String toString() {
         return "{" +
-            " from='" + getFrom().getStop().getName() + "'" +
-            ", to='" + getTo().getStop().getName() + "'" +
-            ", on line=' " + getRoute().getShortName() + " towards " + getTrip().getHeadsign() + "'" +
-            ", \ntotal travel time='" + getCost() + "'" +
+                " from='" + getFrom().getStop().getName() + "'" +
+                ", to='" + getTo().getStop().getName() + "'" +
+                ", on line=' " + getRoute().getShortName() + " towards " + getTrip().getHeadsign() + "'" +
+                ", \ntotal travel time='" + getCost() + "'" +
 
-            "}";
+                "}";
     }
-
 
 }

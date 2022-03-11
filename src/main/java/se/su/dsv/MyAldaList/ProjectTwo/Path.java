@@ -5,41 +5,41 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Path {
-    private List<SL_Stop> firstPartOfPath;
-    private SL_Route restOfPath;
-    private SL_Stop to;
+    private List<SLStop> firstPartOfPath;
+    private SLRoute restOfPath;
+    private SLStop to;
 
-    public Path(SL_Route route, SL_Stop to){
-        firstPartOfPath = new LinkedList<SL_Stop>();
+    public Path(SLRoute route, SLStop to){
+        firstPartOfPath = new LinkedList<SLStop>();
         restOfPath=route;
         this.to=to;
     }
 
-    public Path(SL_Route route, SL_Stop to, SL_Stop... stops){
+    public Path(SLRoute route, SLStop to, SLStop... stops){
         firstPartOfPath = new LinkedList<>();
         firstPartOfPath.addAll(Arrays.asList(stops));
         restOfPath=route;
         this.to=to;
     }
 
-    public Path(SL_Route route, SL_Stop to, List<SL_Stop> stops){
+    public Path(SLRoute route, SLStop to, List<SLStop> stops){
         firstPartOfPath = new LinkedList<>();
         firstPartOfPath.addAll(stops);
         restOfPath=route;
         this.to=to;
     }
 
-    public Path(List<SL_Stop> firstPartOfPath, SL_Route restOfPath, SL_Stop to){
+    public Path(List<SLStop> firstPartOfPath, SLRoute restOfPath, SLStop to){
         this.firstPartOfPath = firstPartOfPath;
         this.restOfPath = restOfPath;
         this.to = to;
     }    
 
-    public boolean addStop(SL_Stop stop){
+    public boolean addStop(SLStop stop){
         return firstPartOfPath.add(stop);
     }
 
-    public List<SL_Stop> getFirstPartOfPath() {
+    public List<SLStop> getFirstPartOfPath() {
         return firstPartOfPath;
     }
 

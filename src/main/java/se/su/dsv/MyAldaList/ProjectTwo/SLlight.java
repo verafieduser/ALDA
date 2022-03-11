@@ -55,13 +55,14 @@ import java.util.Set;
 public class SLlight {
 
     Graph graph;
+    PathFinder pathfinder;
     Scanner in;
     //PrintStream out = new PrintStream(System.out, true, "UTF-8");
 
-    Set<SL_Stop> stops = new HashSet<>();
-    List<SL_Stop_Time> stopTimes = new ArrayList<>();
-    List<SL_Route> routes = new LinkedList<>();
-    List<SL_Trip> trips = new LinkedList<>();
+    Set<SLStop> stops = new HashSet<>();
+    List<SLStopTime> stopTimes = new ArrayList<>();
+    List<SLRoute> routes = new LinkedList<>();
+    List<SLTrip> trips = new LinkedList<>();
 
     public static void main(String[] args) {
         SLlight sl = new SLlight();
@@ -77,31 +78,31 @@ public class SLlight {
 
     private void queryUser() {
         do {
-            SL_Stop[] fromAndTo = queryUserAboutTrip();
-            SL_Stop from = fromAndTo[0];
-            SL_Stop to = fromAndTo[1];
+            SLStop[] fromAndTo = queryUserAboutTrip();
+            SLStop from = fromAndTo[0];
+            SLStop to = fromAndTo[1];
             boolean resultByArrival = queryUserAboutTime();
             Time t = queryUserAboutWhen();
             System.out.println("Going from: " + from.getName() + " to: " + to.getName());
             System.out.print("Do you want to find a trip with a minimum amount of shifts? y/n: ");
             List<Edge> path;
             if(in.nextLine().equalsIgnoreCase("y")){
-                path = graph.minimumShifts(from, to, t, resultByArrival);
+                path = pathfinder.minimumShifts(from, to, t, resultByArrival);
             } else {
-                path = graph.aStar(from, to, t, resultByArrival);
+                path = pathfinder.aStar(from, to, t, resultByArrival);
             }
-            System.out.println(graph.printPath(path));
+            System.out.println(pathfinder.printPath(path));
             System.out.print("Press enter for another trip: ");
         } while ((in.nextLine().equalsIgnoreCase("")));
 
         //in.close();
     }
 
-    private SL_Stop[] queryUserAboutTrip() {
+    private SLStop[] queryUserAboutTrip() {
         String errorMessage = "Station could not be found. Try again";
-        SL_Stop from = findNode("Going from : ", errorMessage);
-        SL_Stop to = findNode("Going to: ", errorMessage);
-        return new SL_Stop[] { from, to };
+        SLStop from = findNode("Going from : ", errorMessage);
+        SLStop to = findNode("Going to: ", errorMessage);
+        return new SLStop[] { from, to };
     }
 
     private boolean queryUserAboutTime() {
@@ -116,11 +117,11 @@ public class SLlight {
         return new Time(answer);
     }
 
-    private SL_Stop findNode(String information, String errorMessage) {
+    private SLStop findNode(String information, String errorMessage) {
         System.out.print(information);
         String query = in.nextLine(); 
         System.out.println(query);
-        SL_Stop result = findNode(query);
+        SLStop result = findNode(query);
         while (result == null) {
             System.out.println(errorMessage);
             System.out.print(information);
@@ -129,15 +130,15 @@ public class SLlight {
         return result;
     }
 
-    public SL_Stop findNode(String name){
+    public SLStop findNode(String name){
         return graph.findNode(name);
     }
     
-    public List<Edge> findPath(SL_Stop from, SL_Stop to, Time time, boolean timeIsArrivalAtGoal, boolean astar){
+    public List<Edge> findPath(SLStop from, SLStop to, Time time, boolean timeIsArrivalAtGoal, boolean astar){
         if(astar){
-            return graph.aStar(from, to, time, timeIsArrivalAtGoal);
+            return pathfinder.aStar(from, to, time, timeIsArrivalAtGoal);
         }
-        return graph.minimumShifts(from, to, time, timeIsArrivalAtGoal);
+        return pathfinder.minimumShifts(from, to, time, timeIsArrivalAtGoal);
        
     }
 
@@ -167,7 +168,12 @@ public class SLlight {
 
 
         graph = new Graph(stops);
+        pathfinder = new PathFinder(graph);
         in = new Scanner(System.in);
+    }
+
+    public Graph getGraph() {
+        return graph;
     }
 
     /**
@@ -218,7 +224,7 @@ public class SLlight {
         String stopName = lines[1];
         double stopLat = Double.parseDouble(lines[2]);
         double stopLon = Double.parseDouble(lines[3]);
-        stops.add(new SL_Stop(stopId, stopName, stopLat, stopLon));
+        stops.add(new SLStop(stopId, stopName, stopLat, stopLon));
     }
 
     private void addRoute(String[] lines) {
@@ -226,13 +232,13 @@ public class SLlight {
         short routeShortName = Short.parseShort(lines[2]);
         // String route_long_name = lines[3];
         short routeType = Short.parseShort(lines[3]);
-        routes.add(new SL_Route(routeId, routeShortName, routeType));
+        routes.add(new SLRoute(routeId, routeShortName, routeType));
     }
 
     private void addTrip(String[] lines) {
         int routeId = Integer.parseInt(lines[0].substring(6));
-        SL_Route line = null;
-        for (SL_Route route : routes) {
+        SLRoute line = null;
+        for (SLRoute route : routes) {
             if (route.getId() == routeId) {
                 line = route;
             }
@@ -240,14 +246,17 @@ public class SLlight {
 
         int tripId = Integer.parseInt(lines[2].substring(6));
         String tripHeadsign = lines[3];
-        trips.add(new SL_Trip(line, tripId, tripHeadsign)); // add dependency!!!
+        trips.add(new SLTrip(line, tripId, tripHeadsign)); // add dependency!!!
     }
 
     private void addStopTime(String[] lines) {
         String departureTime = lines[2];
+        if(departureTime.isBlank()){
+            departureTime = lines[1];
+        }
         int stopId = Integer.parseInt(lines[3].substring(4));
-        SL_Stop location = null;
-        for (SL_Stop stop : stops) {
+        SLStop location = null;
+        for (SLStop stop : stops) {
             if (stop.getId() == stopId) {
                 location = stop;
                 break;
@@ -256,11 +265,11 @@ public class SLlight {
         short stopSequence = Short.parseShort(lines[4]);
 
         int tripId = Integer.parseInt(lines[0].substring(6));
-        SL_Trip tripStop = null;
-        for (SL_Trip trip : trips) {
+        SLTrip tripStop = null;
+        for (SLTrip trip : trips) {
             if (trip.getId() == tripId) {
                 tripStop = trip;
-                SL_Stop_Time stopTime = new SL_Stop_Time(tripStop, departureTime, location, stopSequence);
+                SLStopTime stopTime = new SLStopTime(tripStop, departureTime, location, stopSequence);
                 trip.addStopTime(stopTime);
                 stopTimes.add(stopTime);
                 break;
@@ -269,11 +278,11 @@ public class SLlight {
     }
 
     private void addTripsToRoutes() {
-        for (SL_Route route : routes) {
-            for (SL_Trip trip : trips) {
+        for (SLRoute route : routes) {
+            for (SLTrip trip : trips) {
                 if (trip.getRoute().equals(route)) {
                     route.addTrip(trip);
-                    for (SL_Stop stop : trip.getStops()) {
+                    for (SLStop stop : trip.getStops()) {
                         route.addStop(stop);
                     }
                 }
@@ -282,8 +291,8 @@ public class SLlight {
     }
 
     public void addTripsToStops() {
-        for (SL_Stop stop : stops) {
-            for (SL_Trip trip : trips) {
+        for (SLStop stop : stops) {
+            for (SLTrip trip : trips) {
                 if (trip.getStops().contains(stop)) {
                     stop.addConnection(trip);
                 }
@@ -292,7 +301,7 @@ public class SLlight {
     }
 
     private void addEdgesToStops() {
-        for (SL_Stop stop : stops) {
+        for (SLStop stop : stops) {
             stop.addEdges();
         }
 
@@ -301,14 +310,14 @@ public class SLlight {
     public void tests() {
         testMaxShifts();
         graph = new Graph(stops);
-        SL_Stop from = graph.findNode("Jarlaberg");
-        SL_Stop to = graph.findNode("Stockholm Sickla Kaj");
-        String result = graph.printPath(graph.aStar(from, to, new Time("14:21:00"), false));
+        SLStop from = graph.findNode("Jarlaberg");
+        SLStop to = graph.findNode("Stockholm Sickla Kaj");
+        String result = pathfinder.printPath(pathfinder.aStar(from, to, new Time("14:21:00"), false));
         System.out.println(result);
     }
 
     private void testMaxShifts() {
-        List<SL_Stop> stopsAsList = new ArrayList<>(stops);
+        List<SLStop> stopsAsList = new ArrayList<>(stops);
         int maxShifts = 0;
         for (int i = 0; i < stops.size(); i++) {
             for (int j = i + 1; j < stops.size(); j++) {
@@ -319,19 +328,19 @@ public class SLlight {
         System.out.println("Max amounts of shifts in SL is: " + maxShifts);
     }
 
-    private int routesInCommon(SL_Stop i, SL_Stop j) {
+    private int routesInCommon(SLStop i, SLStop j) {
         int steps = 1;
-        List<SL_Route> routes = new ArrayList<>();
-        for (SL_Route route : i.getRoutes()) {
+        List<SLRoute> routes = new ArrayList<>();
+        for (SLRoute route : i.getRoutes()) {
             if (j.getRoutes().contains(route)) {
                 return steps;
             }
             routes.add(route);
         }
         while (true) {
-            List<SL_Route> nextRoutes = new ArrayList<>();
-            for (SL_Route route1 : routes) {
-                for (SL_Route route2 : route1.intersectingRoutes()) {
+            List<SLRoute> nextRoutes = new ArrayList<>();
+            for (SLRoute route1 : routes) {
+                for (SLRoute route2 : route1.intersectingRoutes()) {
                     if (j.getRoutes().contains(route2)) {
                         return steps;
                     }
