@@ -43,13 +43,11 @@ public class Graph {
     public List<Edge> minimumShifts(SL_Stop start, SL_Stop goal, Time earliestTime, boolean timeIsArrivalAtGoal) {
         List<Edge> result = new LinkedList<>();
         List<SL_Route> connectingRoutes = findConnectingRoutes(start, goal);
-        List<Edge> path = new LinkedList<>();
 
         //edge case for when there is only one route:
         if (connectingRoutes.size() == 1) {
             SL_Trip trip = connectingRoutes.get(0).connectingTrip(start, goal, earliestTime, timeIsArrivalAtGoal);
-            path = trip.getPath(start, goal);
-            return path;
+            return trip.getPath(start, goal);
         }
 
         for (int i = 0; i < connectingRoutes.size() - 1; i++) {
@@ -58,22 +56,22 @@ public class Graph {
             Set<SL_Stop> intersectingStops = connectingRoutes.get(i).intersectingStops(connectingRoutes.get(i + 1));
             // chooses one of those stops arbitrarily:
             SL_Stop arbitraryStop = intersectingStops.iterator().next();
-            System.out.println(arbitraryStop);
+            System.out.println("Linking stop between lines: " +arbitraryStop);
             // TODO: earliest time here needs to be adjusted so it is not always the same
             // Finds a trip at a relevant time that connects from where
             // we currently are, to the intersecting stop:
             SL_Trip trip = connectingRoutes.get(i).connectingTrip(start, arbitraryStop, earliestTime,
                     timeIsArrivalAtGoal);
             // turn that trip into a path of edges:
-            path = trip.getPath(start, arbitraryStop);
-            result.addAll(path);
+
+            result.addAll(trip.getPath(start, arbitraryStop));
+
             // preparation for the next stop of the iteration:
             start = arbitraryStop;
 
         }
         SL_Trip trip = connectingRoutes.get(connectingRoutes.size() - 1).connectingTrip(start, goal, earliestTime,
                 timeIsArrivalAtGoal);
-        path = trip.getPath(start, goal);
         result.addAll(trip.getPath(start, goal));
         return result;
     }

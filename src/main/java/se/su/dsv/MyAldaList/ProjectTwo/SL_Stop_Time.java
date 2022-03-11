@@ -2,8 +2,7 @@ package se.su.dsv.MyAldaList.ProjectTwo;
 
 public class SL_Stop_Time implements Comparable<SL_Stop_Time>{
     private SL_Trip trip;
-    private Time departureTime;
-    private SL_Stop_Time next; 
+    private Time departureTime; 
     private SL_Stop stop;
     private short sequence;
 
@@ -19,13 +18,6 @@ public class SL_Stop_Time implements Comparable<SL_Stop_Time>{
         return this.trip;
     }
 
-    public SL_Stop_Time getNext(){
-        return next;
-    }
-
-    public void setNext(SL_Stop_Time next) {
-        this.next = next;
-    }
 
     public Time getDepartureTime() {
         return departureTime;

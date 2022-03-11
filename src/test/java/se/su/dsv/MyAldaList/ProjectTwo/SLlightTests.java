@@ -12,12 +12,13 @@ import org.junit.jupiter.api.*;
  */
 public class SLlightTests {
 
-	private SLlight sl = new SLlight();
+	private SLlight sl;
 	private Time defaultTime = new Time("10:10:10");
 
 
-    @BeforeAll
+    @BeforeEach
 	public void setUp() {
+		sl = new SLlight();
 		sl.initializeData(false);
 	}
 
@@ -46,21 +47,24 @@ public class SLlightTests {
 		assertTrue(defaultTime.compareTo(edge.getFrom().getDepartureTime()) > 0);
 	}
 
+	@Test
 	public void findPathOnSameLineMinShiftDepartureAfterTime() {
 		SL_Stop from = sl.findNode("Ropsten t-bana");
 		SL_Stop to = sl.findNode("Brevik");
 		List<Edge> edges = sl.findPath(from, to, defaultTime, false, false);
-		assertEquals(10, edges.size());
+		assertEquals(9, edges.size());
 		Edge edge = edges.get(0);
 		assertEquals("tramway", edge.getType());
 		assertTrue(defaultTime.compareTo(edge.getFrom().getDepartureTime()) < 0);
 	}
 
+	@Test
 	public void findPathOnSameLineMinShiftArrivalBeforeTime() {
 		SL_Stop from = sl.findNode("Ropsten t-bana");
 		SL_Stop to = sl.findNode("Brevik");
 		List<Edge> edges = sl.findPath(from, to, defaultTime, true, false);
-		assertEquals(10, edges.size());
+		System.out.println(edges);
+		assertEquals(9, edges.size());
 		Edge edge = edges.get(0);
 		assertEquals("tramway", edge.getType());
 		assertTrue(defaultTime.compareTo(edge.getFrom().getDepartureTime()) > 0);
