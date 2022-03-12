@@ -92,7 +92,7 @@ public class Trip {
     public StopTime getNext(StopTime from) {
         int currentStopSeq = from.getSequence();
 
-        if (currentStopSeq >= stopTimes.size() - 1) {
+        if (currentStopSeq > stopTimes.size() - 1) {
             return null;
         }
 

@@ -11,8 +11,8 @@ import java.util.Set;
 
 /**
  * Class that stores nodes, and methods for helping out working with them,
- * such as finding neighbouring nodes for the A* algorithm, calculating
- * geo-distance between stations, and finding nodes based on station names.
+ * such as calculating geo-distance between stations, 
+ * and finding nodes based on station names.
  * 
  * Only stores nodes, and then nodes are responsible for
  * storing their own edges.
@@ -47,33 +47,6 @@ public class Graph {
     }
 
     /**
-     * Method for finding neighbouring nodes from a stop, and then assign
-     * a cost to them according to the A* algorithm.
-     * 
-     * @param current stop that you want to find neighbours to.
-     * @param goal    station to calculate distance to for the A* algorithm.
-     * @return a list of stops that neighbours param current, with costs
-     *         added for the path taken so far.
-     */
-    public List<Station> addNeighbouringNodes(Station current, Station goal) {
-        List<Station> neighbours = new LinkedList<>();
-        for (Edge edge : current.getUniqueEdges()) {
-            Station stop = edge.getTo().getStation();
-            Time nextStopRouteCost = Time.plus(current.getCurrentRouteScore(), edge.getCost());
-            // if the new connection takes less time than the old one, add it (prohibits
-            // visited nodes to be visited over n over)
-            if (nextStopRouteCost.compareTo(stop.getCurrentRouteScore()) < 0) {
-                stop.setCurrentRouteScore(nextStopRouteCost);
-                stop.setDistanceToGoalScore(calculateDistance(stop, goal));
-                stop.setPrevious(current);
-                neighbours.add(stop);
-
-            }
-        }
-        return neighbours;
-    }
-
-    /**
      * Algorithm for calculating the distance between two map coordinates,
      * that is, two points with longitude and latitude.
      * 
@@ -82,6 +55,9 @@ public class Graph {
      * 
      * Based on algorithm found at:
      * http://www.movable-type.co.uk/scripts/latlong.html
+     * 
+     * Good explanation for how it works:
+     * https://www.baeldung.com/cs/haversine-formula
      * 
      * @param from
      * @param to

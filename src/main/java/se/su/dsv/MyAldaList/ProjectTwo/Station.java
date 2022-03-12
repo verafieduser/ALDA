@@ -54,7 +54,7 @@ public class Station implements Comparable<Station> {
      * Default value is 99 hours, since that will be far above any other values that
      * will occur while pathfinding.
      */
-    private Time currentRouteScore;
+    private double distanceOfPath;
     /**
      * Calculates a score based on how far it is to the goal from this station. Used
      * by the A* algorithm.
@@ -81,7 +81,8 @@ public class Station implements Comparable<Station> {
         this.id = stopId;
         this.name = stopName;
         latlon = new double[] { stopLat, stopLon };
-        currentRouteScore = new Time("99:00:00");
+        distanceOfPath = Double.POSITIVE_INFINITY;
+        distanceToGoalScore = Double.POSITIVE_INFINITY;
     }
 
     /**
@@ -187,21 +188,20 @@ public class Station implements Comparable<Station> {
      * Returns edges to all neighbouring stops before, but as close as possible, to
      * time specified.
      * 
-     * @param earliestTime time that return value needs to be before, but as close
+     * @param latestTime time that return value needs to be before, but as close
      *                     to as possible.
      * @return edges between this and all neighbours, at specified time.
      */
     public Edge[] edgesAtLatestTime(Time latestTime) {
         Map<Station, Edge> map = new HashMap<>();
         for (Edge edge : edges) {
-            Station to = edge.getTo().getStation();
-            StopTime from = edge.getFrom();
-            // we are not interested in already departed times
-            if (from.getTime().compareTo(latestTime) <= 0) {
-                Edge old = map.get(to);
-                // if new is earlier than old one, if there is one, add new:
-                if (old == null || from.getTime().compareTo(old.getFrom().getTime()) > 0) {
-                    map.put(to, edge);
+            StopTime to = edge.getTo();
+            // we are not interested in times that are too late
+            if (to.getTime().compareTo(latestTime) <= 0) {
+                Edge old = map.get(to.getStation());
+                // if new is later than old one, if there is one, add new:
+                if (old == null || to.getTime().compareTo(old.getTo().getTime()) > 0) {
+                    map.put(to.getStation(), edge);
                 }
             }
         }
@@ -229,8 +229,8 @@ public class Station implements Comparable<Station> {
      *         Default value is 99 hours, since that will be far above any other
      *         values that will occur while pathfinding.
      */
-    public Time getCurrentRouteScore() {
-        return currentRouteScore;
+    public double getDistanceOfPath() {
+        return distanceOfPath;
     }
 
     /**
@@ -242,11 +242,11 @@ public class Station implements Comparable<Station> {
     }
 
     /**
-     * @param currentRouteScore set how long it has taken to get to this station, in
+     * @param distanceOfPath set how far the path is getting to this station, in
      *                          A* algorithm.
      */
-    public void setCurrentRouteScore(Time currentRouteScore) {
-        this.currentRouteScore = currentRouteScore;
+    public void setDistanceOfPath(double distanceOfPath) {
+        this.distanceOfPath = distanceOfPath;
     }
 
     /**
@@ -256,7 +256,7 @@ public class Station implements Comparable<Station> {
      *                            coordinates. method to calculate this is found in
      *                            the Graph-class.
      */
-    public void setDistanceToGoalScore(double distanceToGoalScore) {
+    public void setDistanceToGoal(double distanceToGoalScore) {
         this.distanceToGoalScore = distanceToGoalScore;
     }
 
@@ -293,7 +293,7 @@ public class Station implements Comparable<Station> {
      * to take.
      */
     public void clear() {
-        currentRouteScore = new Time("99:00:00");
+        distanceOfPath = Double.POSITIVE_INFINITY;
         distanceToGoalScore = Double.POSITIVE_INFINITY;
         previous = null;
     }

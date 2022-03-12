@@ -47,8 +47,8 @@ public class SLLight {
 
     public static void main(String[] args) {
         SLLight sl = new SLLight();
-        sl.initializeData(true, true);
-        //sl.queryUser();
+        sl.initializeData(true, false);
+        sl.queryUser();
         sl.close();
     }
 
@@ -83,7 +83,7 @@ public class SLLight {
                 path = pathfinder.aStar(from, to, t);
             }
             System.out.println(pathfinder.printPath(path));
-            System.out.print("Press enter for another trip: ");
+            System.out.print("Press press enter for another trip. Write anything and then press enter to quit: ");
         } while ((in.nextLine().equalsIgnoreCase("")));
     }
 
@@ -400,7 +400,7 @@ public class SLLight {
     public void tests() {
         //testMaxShifts();
         Station from = findNode("Brevik");
-        Station to = findNode("Skogvaktargatan");
+        Station to = findNode("Farsta strand t-bana");
 
         if(from == null || to == null){
             System.out.println("Stations not found");
