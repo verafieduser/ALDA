@@ -85,7 +85,8 @@ public class ClosestPoints {
 
 	/**
 	 * Method that creates the middle strip of point pairs which the two recursive calls in the main method cannot consider. 
-	 * Iterates from the center, which means the least amount as possible of the array will be iterated over.
+	 * Iterates from the center, which means a minimum of the array will be iterated over. This solution is made possible 
+	 * by the fact I am using indices to represent where the middle strip starts and ends. 
 	 * @param points a presorted array of points, sorted on the x-axis. 
 	 * @param minDistance minimum distance found so far.
 	 * @param middle the index of the middle point of the section we are currently looking at
@@ -132,8 +133,8 @@ public class ClosestPoints {
 	/**
 	 * Method directly inspired by implementation on page 453 in Data Structures and Algorithm Analysis in Java, 
 	 * by Mark Allen Weiss. Ensures running time is O(n log^2 n).
-	 * Made general by the parameter isMiddle, ensuring there is no need for two separate brute force methods, when
-	 * they essentially do the same thing. 
+	 * Made general by the parameter isMiddle, ensuring there is no need for two separate brute force methods (one for
+	 * the middle strip, and one for the respective halves), when they essentially do the same thing. 
 	 * @param points an array sorted on the x axis. if isMiddle is true, no pre-sorting is required. 
 	 * @param minDistance the minimum distance between two points found so far. 
 	 * @return two points which are the two closest pair found in this method. 
