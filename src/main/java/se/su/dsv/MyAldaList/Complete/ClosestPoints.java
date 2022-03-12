@@ -14,6 +14,20 @@ public class ClosestPoints {
 	 * Afterwards it creates a middle strip of all points x distance from the middle that is less
 	 * than minimum distance found in both halves. It then searches through this middle strip by 
 	 * sorting it on the y-axis, and then brute forcing them.
+	 * 
+	 * I chose to not provide a pre-sorted list for the y-axis that would be split up as the recursion
+	 * goes deeper. This is because it would be completely contrary to the solution with the indices,
+	 * because you would have to iterate over the y-list to be able to split it on the x-axis as required.
+	 * Even though this could improve performance in the case that points are gathered around the centre, it
+	 * would make the general performance a lot worse as a cost. I do not think that cost is worth it, 
+	 * especially since the data we tested upon was randomly distributed, which gives an incredible low chance
+	 * for a list of points concentrated along the middle-points. 
+	 * 
+	 * However, if I would take this algorithm further, it would be to overload it with a method that takes 
+	 * the same parameters, except for a boolean flag extra. This flag would decide if you'd want to use the
+	 * anti-clustering algorithm, or this one. That could give the user the power to decide which algorithm to use,
+	 * based on the data they are dealing with and what risks they are willing to take given pseudo random data.
+	 * 
 	 * @param points array of points, unsorted. 
 	 * @return the closest pair of points in points array. 
 	 */
